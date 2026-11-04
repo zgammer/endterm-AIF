@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Книга волшебных алгоритмов</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+<section class="hero" id="hero"><div class="stage">
+  <div class="bk" id="bk"><div class="p0"><p>Давным-давно жили алгоритмы…<br>Листай дальше, чтобы услышать их сказки.</p></div>
+  <div class="cv"><div class="fr">Книга волшебных алгоритмов</div><div class="bkf"></div></div></div>
+  <div class="hint" id="hint">Прокрути вниз ↓</div>
+</div></section>
+
+<main class="book">
+
+<section id="c1">
+  <h2><small>Глава I</small>Поиск пути: BFS, DFS, UCS и A*</h2>
+  <p class="drop">Жил-был агент, и нужно было ему добраться из точки START в точку GOAL. Сказка становится задачей, когда есть четыре вещи: <b>пространство состояний</b>, <b>функция-преемник</b> (действия и их стоимость), <b>стартовое состояние</b> и <b>проверка цели</b>. Решение — последовательность действий, которая ведёт из START в GOAL<i class="h" style="transform:rotate(-12deg)" data-n="Берегись огра"></i>.</p>
+  <figure class="ill" data-f="img/ch1-01-quest.png"><img src="img/ch1-01-quest.png" alt="Рыцарь у замка, вдали дорога к башне" onerror="this.parentNode.classList.add('miss')"><figcaption>От START к GOAL ведёт не одна дорога.</figcaption></figure>
+  <p>Все алгоритмы строят «дерево, что если»: корень — старт, дети — результаты действий. Главный вопрос один: <b>какой узел границы (fringe) раскрыть следующим?</b></p>
+  <div class="wrap"><table>
+    <tr><th>Алгоритм</th><th>Какой узел берёт</th><th>Структура</th></tr>
+    <tr><td>DFS</td><td>самый глубокий</td><td>стек (LIFO)</td></tr>
+    <tr><td>BFS</td><td>самый мелкий</td><td>очередь (FIFO)</td></tr>
+    <tr><td>UCS</td><td>с наименьшим g(n)</td><td>приоритетная очередь</td></tr>
+    <tr><td>A*</td><td>с наименьшим g(n)+h(n)<i class="h" style="transform:rotate(15deg);width:22px;height:22px" data-n="Берегись огра"></i></td><td>приоритетная очередь</td></tr>
+  </table></div>
+  <figure class="ill" data-f="img/ch1-02-fringe.png"><img src="img/ch1-02-fringe.png" alt="Дерево дорог с рыцарем-фонарщиком" onerror="this.parentNode.classList.add('miss')"><figcaption>Граница поиска: какую ветку осветить первой?</figcaption></figure>
+  <div class="box">
+    <div class="formula">f(n) = g(n) + h(n)</div>
+    <p>g(n) — сколько уже заплачено, h(n) — оценка того, сколько ещё идти, f(n) — оценка всего пути. Пример: узел A (g=4, h=8, f=12) и узел B (g=7, h=2, f=9). A* раскроет B, потому что 9 &lt; 12: он готов платить больше сейчас ради лучшего итога.</p>
+  </div>
+  <figure class="ill" data-f="img/ch1-03-astar.png"><img src="img/ch1-03-astar.png" alt="Рыцарь с подзорной трубой и указателями" onerror="this.parentNode.classList.add('miss')"><figcaption>Эвристика — подзорная труба, а не карта.</figcaption></figure>
+  <p>BFS находит путь с наименьшим числом шагов, но не с наименьшей стоимостью. Если рёбра имеют разную цену, нужен UCS, а с хорошей эвристикой — A*.</p>
+<pre>from collections import deque
+def bfs(graph, start, goal):
+    queue = deque([(start, [start])])
+    while queue:
+        state, path = queue.popleft()   # FIFO
+        if state == goal:
+            return path
+        for nxt in graph[state]:
+            queue.append((nxt, path + [nxt]))</pre>
+  <div class="q" data-a="1"><p>1. Какая структура данных хранит границу в BFS?</p>
+    <button>Стек (LIFO)</button><button>Очередь (FIFO)</button><button>Приоритетная очередь по f(n)</button>
+    <div class="no">Не то. Подумай, какой узел BFS берёт первым: самый мелкий.</div><div class="ex">Верно: popleft() берёт самый старый, то есть самый мелкий узел.</div></div>
+  <div class="q" data-a="2"><p>2. Когда BFS и UCS дают разные пути?</p>
+    <button>Когда граф слишком большой</button><button>Когда есть цикл</button><button>Когда рёбра имеют разную стоимость</button>
+    <div class="no">Не то. BFS считает шаги, UCS считает цену.</div><div class="ex">Верно: BFS считает число действий, а UCS — суммарную стоимость g(n).</div></div>
+  <div class="q" data-a="0"><p>3. Как ведёт себя A*, если h(n) = 0 для всех узлов?</p>
+    <button>Как UCS</button><button>Как DFS</button><button>Как BFS с повторами</button>
+    <div class="no">Не то. Подставь h = 0 в f(n) = g(n) + h(n).</div><div class="ex">Верно: f(n) = g(n), а это ровно критерий UCS.</div></div>
+  <i class="h a" style="right:8px;bottom:30%;transform:rotate(-25deg)" data-n="Берегись огра"></i>
+</section>
+
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+
+<section id="c2">
+  <h2><small>Глава II</small>Локальный поиск: подъём в гору</h2>
+  <p class="drop">Иногда дорога не важна, важен сам замок, в который мы пришли. Тогда ищут не путь, а <b>полную конфигурацию</b>: расстановку ферзей, маршрут коммивояжёра. У конфигурации есть <b>соседи</b> (небольшие изменения) и <b>целевая функция</b> — число, которое мы максимизируем или минимизируем. Хранится лишь текущее состояние, поэтому память почти не нужна<i class="h" style="transform:rotate(10deg)" data-n="Берегись огра"></i>.</p>
+  <figure class="ill" data-f="img/ch2-01-landscape.png"><img src="img/ch2-01-landscape.png" alt="Холмы с двумя вершинами и рыцарем" onerror="this.parentNode.classList.add('miss')"><figcaption>Ландшафт: низкий пик рядом, высокий — вдали.</figcaption></figure>
+  <p><b>Hill climbing</b> смотрит на соседей и идёт в лучшего; когда лучших нет, останавливается. Он быстр, но попадает в ловушки: <b>локальный максимум</b> (пик ниже главного), <b>плато</b> (всё одинаково) и <b>хребет</b>.</p>
+  <div class="box"><p>Ландшафт <b>[1, 4, 7, 5, 3, 6, 9, 8]</b>. Из индекса 0 алгоритм идёт 1 → 4 → 7 и стоит: оба соседа хуже. Но на индексе 6 лежит значение 9, глобальный максимум.<i class="h a" style="right:6px;bottom:4px;width:24px;height:24px;transform:rotate(30deg)" data-n="Берегись огра"></i></p></div>
+  <figure class="ill" data-f="img/ch2-02-restarts.png"><img src="img/ch2-02-restarts.png" alt="Три рыцаря стартуют с разных холмов" onerror="this.parentNode.classList.add('miss')"><figcaption>Случайные перезапуски: у каждого рыцаря свой холм.</figcaption></figure>
+  <p><b>Случайные перезапуски</b>: запускаем hill climbing из разных точек и берём лучший результат. <b>Имитация отжига</b> умеет временно принимать ход хуже: при высокой температуре T это часто, по мере остывания — всё реже.</p>
+  <figure class="ill" data-f="img/ch2-03-annealing.png"><img src="img/ch2-03-annealing.png" alt="Кузнец у горна с остывающим металлом" onerror="this.parentNode.classList.add('miss')"><figcaption>Отжиг: сначала жарко и свободно, потом всё строже.</figcaption></figure>
+  <div class="box"><div class="formula">ΔE = next − current;  P(принять хуже) = exp(ΔE / T)</div></div>
+<pre>import random, math
+def anneal(values, start, T=10):
+    current = start
+    while T > 0.1:
+        nxt = random_neighbor(current)
+        dE = values[nxt] - values[current]
+        if dE > 0 or random.random() < math.exp(dE / T):
+            current = nxt
+        T *= 0.95          # остывание
+    return current</pre>
+  <div class="q" data-a="2"><p>1. Когда hill climbing останавливается?</p>
+    <button>Когда закончилось время</button><button>Когда найден глобальный максимум</button><button>Когда ни один сосед не лучше текущего</button>
+    <div class="no">Не то. Алгоритм не знает, где глобальный максимум.</div><div class="ex">Верно: он знает только соседей и останавливается, если улучшения нет.</div></div>
+  <div class="q" data-a="1"><p>2. Что позволяет имитации отжига выйти из локального максимума?</p>
+    <button>Она запоминает весь путь</button><button>Иногда принимает ход хуже</button><button>Она перебирает все состояния</button>
+    <div class="no">Не то. Подумай о роли температуры T.</div><div class="ex">Верно: ход хуже принимается с вероятностью exp(ΔE/T), которая падает при остывании.</div></div>
+  <div class="q" data-a="0"><p>3. Hill climbing на [1, 4, 7, 5, 3, 6, 9, 8] со старта в индексе 0 вернёт значение…</p>
+    <button>7</button><button>9</button><button>8</button>
+    <div class="no">Не то. Пройди шаги: 1 → 4 → 7, а дальше соседи хуже.</div><div class="ex">Верно: 7 — локальный максимум, а до 9 нужно пройти через худшее значение.</div></div>
+  <i class="h a" style="left:4px;bottom:12%;transform:rotate(18deg)" data-n="Берегись огра"></i>
+</section>
+
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+<p style="text-align:center"><i>Продолжение следует… Далее: вероятность, HMM, решения, ML, MDP.</i></p>
+
+<footer class="seal">
+  <div class="formula">Печать книги</div>
+  <p id="st"></p>
+  <p class="cnt">Знаки: <b id="cf">0</b>/<b id="tf">0</b> · Ответы: <b id="cq">0</b>/<b id="tq">0</b></p>
+  <button id="go" disabled>Сломать печать</button>
+</footer>
+</main>
+
+<div id="ov"><div id="ld"><p>Волшебная книга пишет последнюю страницу…</p><div class="bar"><i id="bf"></i></div></div>
+  <div id="pic"><img id="im" alt="Награда"></div>
+  <button id="close" hidden>Закрыть</button></div>
+<div id="toast"></div>
+
+<script src="js/book.js"></script>
+</body>
+</html>

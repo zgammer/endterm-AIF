@@ -1,0 +1,31 @@
+<section id="c2">
+  <h2><small>Глава II</small>Локальный поиск: подъём в гору</h2>
+  <p class="drop">Иногда дорога не важна, важен сам замок, в который мы пришли. Тогда ищут не путь, а <b>полную конфигурацию</b>: расстановку ферзей, маршрут коммивояжёра. У конфигурации есть <b>соседи</b> (небольшие изменения) и <b>целевая функция</b> — число, которое мы максимизируем или минимизируем. Хранится лишь текущее состояние, поэтому память почти не нужна<i class="h" style="transform:rotate(10deg)" data-n="Берегись огра"></i>.</p>
+  <figure class="ill" data-f="img/ch2-01-landscape.png"><img src="img/ch2-01-landscape.png" alt="Холмы с двумя вершинами и рыцарем" onerror="this.parentNode.classList.add('miss')"><figcaption>Ландшафт: низкий пик рядом, высокий — вдали.</figcaption></figure>
+  <p><b>Hill climbing</b> смотрит на соседей и идёт в лучшего; когда лучших нет, останавливается. Он быстр, но попадает в ловушки: <b>локальный максимум</b> (пик ниже главного), <b>плато</b> (всё одинаково) и <b>хребет</b>.</p>
+  <div class="box"><p>Ландшафт <b>[1, 4, 7, 5, 3, 6, 9, 8]</b>. Из индекса 0 алгоритм идёт 1 → 4 → 7 и стоит: оба соседа хуже. Но на индексе 6 лежит значение 9, глобальный максимум.<i class="h a" style="right:6px;bottom:4px;width:24px;height:24px;transform:rotate(30deg)" data-n="Берегись огра"></i></p></div>
+  <figure class="ill" data-f="img/ch2-02-restarts.png"><img src="img/ch2-02-restarts.png" alt="Три рыцаря стартуют с разных холмов" onerror="this.parentNode.classList.add('miss')"><figcaption>Случайные перезапуски: у каждого рыцаря свой холм.</figcaption></figure>
+  <p><b>Случайные перезапуски</b>: запускаем hill climbing из разных точек и берём лучший результат. <b>Имитация отжига</b> умеет временно принимать ход хуже: при высокой температуре T это часто, по мере остывания — всё реже.</p>
+  <figure class="ill" data-f="img/ch2-03-annealing.png"><img src="img/ch2-03-annealing.png" alt="Кузнец у горна с остывающим металлом" onerror="this.parentNode.classList.add('miss')"><figcaption>Отжиг: сначала жарко и свободно, потом всё строже.</figcaption></figure>
+  <div class="box"><div class="formula">ΔE = next − current;  P(принять хуже) = exp(ΔE / T)</div></div>
+<pre>import random, math
+def anneal(values, start, T=10):
+    current = start
+    while T > 0.1:
+        nxt = random_neighbor(current)
+        dE = values[nxt] - values[current]
+        if dE > 0 or random.random() < math.exp(dE / T):
+            current = nxt
+        T *= 0.95          # остывание
+    return current</pre>
+  <div class="q" data-a="2"><p>1. Когда hill climbing останавливается?</p>
+    <button>Когда закончилось время</button><button>Когда найден глобальный максимум</button><button>Когда ни один сосед не лучше текущего</button>
+    <div class="no">Не то. Алгоритм не знает, где глобальный максимум.</div><div class="ex">Верно: он знает только соседей и останавливается, если улучшения нет.</div></div>
+  <div class="q" data-a="1"><p>2. Что позволяет имитации отжига выйти из локального максимума?</p>
+    <button>Она запоминает весь путь</button><button>Иногда принимает ход хуже</button><button>Она перебирает все состояния</button>
+    <div class="no">Не то. Подумай о роли температуры T.</div><div class="ex">Верно: ход хуже принимается с вероятностью exp(ΔE/T), которая падает при остывании.</div></div>
+  <div class="q" data-a="0"><p>3. Hill climbing на [1, 4, 7, 5, 3, 6, 9, 8] со старта в индексе 0 вернёт значение…</p>
+    <button>7</button><button>9</button><button>8</button>
+    <div class="no">Не то. Пройди шаги: 1 → 4 → 7, а дальше соседи хуже.</div><div class="ex">Верно: 7 — локальный максимум, а до 9 нужно пройти через худшее значение.</div></div>
+  <i class="h a" style="left:4px;bottom:12%;transform:rotate(18deg)" data-n="Берегись огра"></i>
+</section>
