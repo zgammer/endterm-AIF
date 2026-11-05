@@ -67,7 +67,7 @@ pre{background:#22201c;color:#f3e6bf;padding:12px 14px;border-radius:4px;overflo
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:#1f2f6b;color:#e9cf7a;padding:8px 16px;border:2px solid var(--gold);border-radius:6px;z-index:40;opacity:0;transition:.3s;font-family:var(--fh);pointer-events:none;white-space:nowrap}
 #toast.on{opacity:1}
 .pg h2{font-size:26px}.pg .drop::first-letter{font-size:3.1em}
-.ill{margin:10px 0}.ill img{width:100%;height:178px;object-fit:cover}.ill.miss::before{padding:34px 10px}
+.ill{margin:10px 0}.ill img{width:100%;height: 310px;;object-fit:cover}.ill.miss::before{padding:34px 10px}
 .q{padding:8px 12px;margin:10px 0}.q p{font-size:15px}.q button{padding:5px 9px;font-size:14.5px;margin:4px 0}
 pre{font-size:12px;line-height:1.35;padding:8px 11px}.box{padding:8px 13px;margin:10px 0}
 .sealp{display:flex;flex-direction:column;justify-content:center;text-align:center;gap:6px}
