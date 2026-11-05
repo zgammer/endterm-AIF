@@ -1,22 +1,27 @@
-<section id="c1">
-  <h2><small>Глава I</small>Поиск пути: BFS, DFS, UCS и A*</h2>
-  <p class="drop">Жил-был агент, и нужно было ему добраться из точки START в точку GOAL. Сказка становится задачей, когда есть четыре вещи: <b>пространство состояний</b>, <b>функция-преемник</b> (действия и их стоимость), <b>стартовое состояние</b> и <b>проверка цели</b>. Решение — последовательность действий, которая ведёт из START в GOAL<i class="h" style="transform:rotate(-12deg)" data-n="Берегись огра"></i>.</p>
-  <figure class="ill" data-f="img/ch1-01-quest.png"><img src="img/ch1-01-quest.png" alt="Рыцарь у замка, вдали дорога к башне" onerror="this.parentNode.classList.add('miss')"><figcaption>От START к GOAL ведёт не одна дорога.</figcaption></figure>
-  <p>Все алгоритмы строят «дерево, что если»: корень — старт, дети — результаты действий. Главный вопрос один: <b>какой узел границы (fringe) раскрыть следующим?</b></p>
+<article class="pg">
+  <h2><small>Chapter I</small>Pathfinding: BFS, DFS, UCS and A*</h2>
+  <p class="drop">Once upon a time, an agent had to travel from START to GOAL. A story becomes a problem when it has four parts: a <b>state space</b>, a <b>successor function</b> (actions and their costs), a <b>start state</b> and a <b>goal test</b>. The solution is a sequence of actions that leads from START to GOAL<i class="h" style="transform:rotate(-12deg)" data-n="Beware Ogre"></i>.</p>
+  <figure class="ill" data-f="img/ch1-01-quest.png"><img src="img/ch1-01-quest.png" alt="A knight at a castle gate with a road to a distant tower" onerror="this.parentNode.classList.add('miss')"><figcaption>More than one road leads from START to GOAL.</figcaption></figure>
+  <p>Every algorithm grows a “what if” tree: the root is the start, the children are the results of actions. There is only one question: <b>which node of the fringe should we expand next?</b></p>
+</article>
+<article class="pg">
+  <p>The algorithms differ only in their fringe policy:</p>
   <div class="wrap"><table>
-    <tr><th>Алгоритм</th><th>Какой узел берёт</th><th>Структура</th></tr>
-    <tr><td>DFS</td><td>самый глубокий</td><td>стек (LIFO)</td></tr>
-    <tr><td>BFS</td><td>самый мелкий</td><td>очередь (FIFO)</td></tr>
-    <tr><td>UCS</td><td>с наименьшим g(n)</td><td>приоритетная очередь</td></tr>
-    <tr><td>A*</td><td>с наименьшим g(n)+h(n)<i class="h" style="transform:rotate(15deg);width:22px;height:22px" data-n="Берегись огра"></i></td><td>приоритетная очередь</td></tr>
+    <tr><th>Algorithm</th><th>Picks the node</th><th>Structure</th></tr>
+    <tr><td>DFS</td><td>deepest</td><td>stack (LIFO)</td></tr>
+    <tr><td>BFS</td><td>shallowest</td><td>queue (FIFO)</td></tr>
+    <tr><td>UCS</td><td>lowest g(n)</td><td>priority queue</td></tr>
+    <tr><td>A*</td><td>lowest g(n)+h(n)<i class="h" style="transform:rotate(15deg);width:22px;height:22px" data-n="Beware Ogre"></i></td><td>priority queue</td></tr>
   </table></div>
-  <figure class="ill" data-f="img/ch1-02-fringe.png"><img src="img/ch1-02-fringe.png" alt="Дерево дорог с рыцарем-фонарщиком" onerror="this.parentNode.classList.add('miss')"><figcaption>Граница поиска: какую ветку осветить первой?</figcaption></figure>
+  <figure class="ill" data-f="img/ch1-02-fringe.png"><img src="img/ch1-02-fringe.png" alt="A tree of roads with a lantern-bearing knight" onerror="this.parentNode.classList.add('miss')"><figcaption>The fringe: which branch should we light up first?</figcaption></figure>
+</article>
+<article class="pg">
   <div class="box">
     <div class="formula">f(n) = g(n) + h(n)</div>
-    <p>g(n) — сколько уже заплачено, h(n) — оценка того, сколько ещё идти, f(n) — оценка всего пути. Пример: узел A (g=4, h=8, f=12) и узел B (g=7, h=2, f=9). A* раскроет B, потому что 9 &lt; 12: он готов платить больше сейчас ради лучшего итога.</p>
+    <p>g(n) is what we have already paid, h(n) is the estimate of what is left, f(n) is the estimated total. Example: node A (g=4, h=8, f=12) and node B (g=7, h=2, f=9). A* expands B because 9 &lt; 12: it is willing to pay more now for a better total.</p>
   </div>
-  <figure class="ill" data-f="img/ch1-03-astar.png"><img src="img/ch1-03-astar.png" alt="Рыцарь с подзорной трубой и указателями" onerror="this.parentNode.classList.add('miss')"><figcaption>Эвристика — подзорная труба, а не карта.</figcaption></figure>
-  <p>BFS находит путь с наименьшим числом шагов, но не с наименьшей стоимостью. Если рёбра имеют разную цену, нужен UCS, а с хорошей эвристикой — A*.</p>
+  <figure class="ill" data-f="img/ch1-03-astar.png"><img src="img/ch1-03-astar.png" alt="A knight with a spyglass and signposts" onerror="this.parentNode.classList.add('miss')"><figcaption>A heuristic is a spyglass, not a map.</figcaption></figure>
+  <p>BFS finds the path with the fewest steps, but not the cheapest one. If edges have different costs, use UCS, and with a good heuristic use A*.</p>
 <pre>from collections import deque
 def bfs(graph, start, goal):
     queue = deque([(start, [start])])
@@ -26,14 +31,17 @@ def bfs(graph, start, goal):
             return path
         for nxt in graph[state]:
             queue.append((nxt, path + [nxt]))</pre>
-  <div class="q" data-a="1"><p>1. Какая структура данных хранит границу в BFS?</p>
-    <button>Стек (LIFO)</button><button>Очередь (FIFO)</button><button>Приоритетная очередь по f(n)</button>
-    <div class="no">Не то. Подумай, какой узел BFS берёт первым: самый мелкий.</div><div class="ex">Верно: popleft() берёт самый старый, то есть самый мелкий узел.</div></div>
-  <div class="q" data-a="2"><p>2. Когда BFS и UCS дают разные пути?</p>
-    <button>Когда граф слишком большой</button><button>Когда есть цикл</button><button>Когда рёбра имеют разную стоимость</button>
-    <div class="no">Не то. BFS считает шаги, UCS считает цену.</div><div class="ex">Верно: BFS считает число действий, а UCS — суммарную стоимость g(n).</div></div>
-  <div class="q" data-a="0"><p>3. Как ведёт себя A*, если h(n) = 0 для всех узлов?</p>
-    <button>Как UCS</button><button>Как DFS</button><button>Как BFS с повторами</button>
-    <div class="no">Не то. Подставь h = 0 в f(n) = g(n) + h(n).</div><div class="ex">Верно: f(n) = g(n), а это ровно критерий UCS.</div></div>
-  <i class="h a" style="right:8px;bottom:30%;transform:rotate(-25deg)" data-n="Берегись огра"></i>
-</section>
+</article>
+<article class="pg">
+  <h2><small>Chapter I</small>Test of Knowledge</h2>
+  <div class="q" data-a="1"><p>1. Which data structure holds the fringe in BFS?</p>
+    <button>Stack (LIFO)</button><button>Queue (FIFO)</button><button>Priority queue by f(n)</button>
+    <div class="no">Not quite. Think about which node BFS takes first: the shallowest one.</div><div class="ex">Correct: popleft() takes the oldest node, which is the shallowest one.</div></div>
+  <div class="q" data-a="2"><p>2. When do BFS and UCS return different paths?</p>
+    <button>When the graph is very large</button><button>When there is a cycle</button><button>When edges have different costs</button>
+    <div class="no">Not quite. BFS counts steps, UCS counts cost.</div><div class="ex">Correct: BFS counts actions, while UCS counts the total cost g(n).</div></div>
+  <div class="q" data-a="0"><p>3. How does A* behave when h(n) = 0 for every node?</p>
+    <button>Like UCS</button><button>Like DFS</button><button>Like BFS with repeats</button>
+    <div class="no">Not quite. Substitute h = 0 into f(n) = g(n) + h(n).</div><div class="ex">Correct: f(n) = g(n), which is exactly the UCS criterion.</div></div>
+  <i class="h a" style="right:3px;top:46%;transform:rotate(-25deg)" data-n="Beware Ogre"></i>
+</article>

@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Книга волшебных алгоритмов</title>
+<title>The Book of Magic Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Uncial+Antiqua&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/book.css">
 </head>
 <body>
+<div id="fontbox"><button id="fontbtn" aria-label="Change font" title="Change font">Aa</button>
+  <div id="fontmenu" hidden><button data-f="classic">Classic storybook</button><button data-f="april">mr_AprilraG</button><button data-f="plain">Plain serif</button></div></div>
 <section class="hero" id="hero"><div class="stage">
-  <div class="bk" id="bk"><div class="p0"><p>Давным-давно жили алгоритмы…<br>Листай дальше, чтобы услышать их сказки.</p></div>
-  <div class="cv"><div class="fr">Книга волшебных алгоритмов</div><div class="bkf"></div></div></div>
-  <div class="hint" id="hint">Прокрути вниз ↓</div>
+  <div class="bk" id="bk"><div id="leaves"></div>
+    <div class="cv" id="cv"><div class="cf fr">The Book of Magic Algorithms</div><div class="cf bkf"></div></div></div>
+  <div class="hint" id="hint">Scroll down ↓</div>
 </div></section>
+<div id="src" hidden>
 
-<main class="book">
