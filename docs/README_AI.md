@@ -22,7 +22,7 @@ css/book.css          all styles (paths to images are ../img/...)
 js/book.js            progress, quizzes, hidden signs, seal/reward, font switch, page flipping
 img/                  hidden-object.png (sign sprite), reward.jpg, + illustrations (see 6)
 fonts/                optional user font: mr_AprilraG.ttf|.otf|.woff2
-docs/image-prompts.md prompts and file names for all illustrations
+docs/for-create/      source materials, book style examples, and image prompts
 ```
 
 Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Edits to `css/` or `js/` need no build. The site must work when `index.html` is opened from disk (`file://`), so **never use `fetch`, ES modules or anything that needs a server.**
@@ -43,7 +43,7 @@ Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Ed
 - **Exactly 3 hidden signs per chapter**: `<i class="h" data-n="Beware Ogre"></i>`. Spread them over different pages. Inline ones go inside text or a table cell. For absolute ones add class `a` and position them in the page margin (`right:3px`/`left:3px` plus `top`), so they never cover buttons or text. The sprite is `img/hidden-object.png`.
 - Illustration markup: `<figure class="ill" data-f="img/chN-01-name.png"><img src="…" alt="…" onerror="this.parentNode.classList.add('miss')"><figcaption>…</figcaption></figure>`. If the file is missing, a dashed frame shows the file name. Images are shown at a fixed height with `object-fit: cover` (so 4:3 or 3:2 are both fine; 3:2 / 1200x800 recommended).
 - Do not give elements IDs inside chapters. Do not add inline scripts. Keep code samples to about 10 lines. Page body font is 15.5 px.
-- Tone: short, friendly, slightly fairy-tale, but technically correct. Source of truth: the lecture PDFs listed in section 8.
+- Tone: short, friendly, slightly fairy-tale, but technically correct. Source of truth for chapter facts: the materials in `docs/for-create/information-source/`. Before drafting, consult `docs/for-create/example-of-a-book's-style/` for examples of the book's text and visual style. The lecture PDFs listed in section 8 are in the information-source folder.
 
 ## 5. State and persistence
 
@@ -55,7 +55,7 @@ Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Ed
 
 - Fonts use CSS variables `--fh` (headings) and `--fb` (body). `html[data-font="april"]` switches to the custom font `mr_AprilraG` loaded from `fonts/` via `@font-face`. The font file is supplied by the user and is not in the repo; without it the fallback fonts are used. Default fonts come from Google Fonts (Uncial Antiqua, IM Fell English), which need internet.
 - Optional background images (silently ignored if absent): `img/cover.png`, `endpaper.png`, `parchment.jpg`, `table-wood.jpg`.
-- Illustrations: `ch1-01-quest`, `ch1-02-fringe`, `ch1-03-astar`, `ch2-01-landscape`, `ch2-02-restarts`, `ch2-03-annealing` (`.png`), and later `ch3-probability`, `ch4-hmm`, `ch5-decisions`, `ch6-clusters`, `ch7-rl`. The user draws them from the prompts in `docs/image-prompts.md`. Do not copy frames or characters from the films (copyright); the art is original, in the style of medieval manuscripts.
+- Illustrations: `ch1-01-quest`, `ch1-02-fringe`, `ch1-03-astar`, `ch2-01-landscape`, `ch2-02-restarts`, `ch2-03-annealing` (`.png`), and later `ch3-probability`, `ch4-hmm`, `ch5-decisions`, `ch6-clusters`, `ch7-rl`. Prompt references are in `docs/for-create/image-prompts.md`. If a book image is needed, ask the user to generate it themselves in Nano Banana to keep the visual style consistent. Provide a ready-to-use image-generation prompt following the structure and style of `docs/for-create/image-prompts.md`; do not assume the user wants AI to generate or add the image directly. Do not copy frames or characters from the films (copyright); the art is original, in the style of medieval manuscripts.
 
 ## 7. Gotchas that already caused bugs
 
