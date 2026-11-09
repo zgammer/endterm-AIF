@@ -6,7 +6,7 @@ Read this first. It describes what the project is, how it is built, what the rul
 
 ## 1. What this is
 
-An interactive web e-book that teaches the *AI Fundamentals* course. It looks like the storybook from the opening of the *Shrek* films: parchment pages, drop caps, heraldic borders. It is plain **HTML + CSS + vanilla JS** (no frameworks, no bundlers, no npm in the shipped project). Version: v0.3, chapters I–II done.
+An interactive web e-book that teaches the *AI Fundamentals* course. It looks like the storybook from the opening of the *Shrek* films: parchment pages, drop caps, heraldic borders. It is plain **HTML + CSS + vanilla JS** (no frameworks, no bundlers, no npm in the shipped project). Version: v0.4, chapters I–IV done (21 pages: 4 + 4 + 6 + 6 + seal).
 
 Experience: a closed book lies on a wooden table. While the user scrolls down, the cover opens, then pages turn one after another like the opening animation. The chapters *are* the pages (nothing below the book). The last page is a "seal" with counters and a locked button. The button unlocks when **all quiz answers are correct OR all hidden signs are found**. Pressing it shows a fake loading bar (about 4 s), then the reward image `img/reward.jpg`.
 
@@ -22,7 +22,7 @@ css/book.css          all styles (paths to images are ../img/...)
 js/book.js            progress, quizzes, hidden signs, seal/reward, font switch, page flipping
 img/                  hidden-object.png (sign sprite), reward.jpg, + illustrations (see 6)
 fonts/                optional user font: mr_AprilraG.ttf|.otf|.woff2
-docs/for-create/      source materials, book style examples, and image prompts
+docs/image-prompts.md prompts and file names for all illustrations
 ```
 
 Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Edits to `css/` or `js/` need no build. The site must work when `index.html` is opened from disk (`file://`), so **never use `fetch`, ES modules or anything that needs a server.**
@@ -42,8 +42,9 @@ Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Ed
 - Quiz markup: `<div class="q" data-a="K"><p>…</p><button>…</button>…<div class="no">hint</div><div class="ex">explanation</div></div>`. `data-a` is the 0-based index of the correct button. Use 3 options. Wrong answers can be retried.
 - **Exactly 3 hidden signs per chapter**: `<i class="h" data-n="Beware Ogre"></i>`. Spread them over different pages. Inline ones go inside text or a table cell. For absolute ones add class `a` and position them in the page margin (`right:3px`/`left:3px` plus `top`), so they never cover buttons or text. The sprite is `img/hidden-object.png`.
 - Illustration markup: `<figure class="ill" data-f="img/chN-01-name.png"><img src="…" alt="…" onerror="this.parentNode.classList.add('miss')"><figcaption>…</figcaption></figure>`. If the file is missing, a dashed frame shows the file name. Images are shown at a fixed height with `object-fit: cover` (so 4:3 or 3:2 are both fine; 3:2 / 1200x800 recommended).
+- Give each chapter an **even number of pages** so the next chapter starts on a right-hand page (chapters I–IV have 4, 4, 6, 6). Quiz pages must still fit after the explanations appear, so keep question texts short.
 - Do not give elements IDs inside chapters. Do not add inline scripts. Keep code samples to about 10 lines. Page body font is 15.5 px.
-- Tone: short, friendly, slightly fairy-tale, but technically correct. Source of truth for chapter facts: the materials in `docs/for-create/information-source/`. Before drafting, consult `docs/for-create/example-of-a-book's-style/` for examples of the book's text and visual style. The lecture PDFs listed in section 8 are in the information-source folder.
+- Tone: short, friendly, slightly fairy-tale, but technically correct. Source of truth: the lecture PDFs listed in section 8.
 
 ## 5. State and persistence
 
@@ -55,7 +56,7 @@ Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Ed
 
 - Fonts use CSS variables `--fh` (headings) and `--fb` (body). `html[data-font="april"]` switches to the custom font `mr_AprilraG` loaded from `fonts/` via `@font-face`. The font file is supplied by the user and is not in the repo; without it the fallback fonts are used. Default fonts come from Google Fonts (Uncial Antiqua, IM Fell English), which need internet.
 - Optional background images (silently ignored if absent): `img/cover.png`, `endpaper.png`, `parchment.jpg`, `table-wood.jpg`.
-- Illustrations: `ch1-01-quest`, `ch1-02-fringe`, `ch1-03-astar`, `ch2-01-landscape`, `ch2-02-restarts`, `ch2-03-annealing` (`.png`), and later `ch3-probability`, `ch4-hmm`, `ch5-decisions`, `ch6-clusters`, `ch7-rl`. Prompt references are in `docs/for-create/image-prompts.md`. If a book image is needed, ask the user to generate it themselves in Nano Banana to keep the visual style consistent. Provide a ready-to-use image-generation prompt following the structure and style of `docs/for-create/image-prompts.md`; do not assume the user wants AI to generate or add the image directly. Do not copy frames or characters from the films (copyright); the art is original, in the style of medieval manuscripts.
+- Illustrations: `ch1-01-quest`, `ch1-02-fringe`, `ch1-03-astar`, `ch2-01-landscape`, `ch2-02-restarts`, `ch2-03-annealing` (`.png`), and later `ch3-01-alarm`, `ch3-02-bayes`, `ch3-03-network`, `ch4-01-hidden`, `ch4-02-clues`, `ch4-03-path`, and later `ch5-decisions`, `ch6-clusters`, `ch7-rl`. The user draws them from the prompts in `docs/image-prompts.md`. Do not copy frames or characters from the films (copyright); the art is original, in the style of medieval manuscripts.
 
 ## 7. Gotchas that already caused bugs
 
@@ -67,12 +68,10 @@ Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Ed
 
 ## 8. Roadmap
 
-Done: chapters I (search: BFS/DFS/UCS/A*) and II (local search). To do:
+Done: chapters I (search), II (local search), III (probability and Bayesian networks), IV (HMMs). To do:
 
 | Chapter | Topic | Source lecture |
 |---|---|---|
-| III | Probability and Bayesian networks | Probability & Bayesian Networks |
-| IV | Hidden Markov Models | Lecture 7 |
 | V | Rational decisions and classical ML | Rational Decisions & Classical ML |
 | VI | Unsupervised learning (K-Means, DBSCAN, PCA, Isolation Forest) | Lecture 9 |
 | VII | MDP and reinforcement learning | MDP + RL |

@@ -1,0 +1,68 @@
+<article class="pg">
+  <h2><small>Chapter IV</small>Hidden Markov Models</h2>
+  <p class="drop">A sensor reports a measurement, not the whole truth. A machine may be Healthy, Degrading or Faulty, but we only see temperature, vibration and alarms. In a Hidden Markov Model the true state stays hidden and produces noisy observations; one high reading does not prove a fault<i class="h" style="transform:rotate(9deg)" data-n="Beware Ogre"></i>.</p>
+  <figure class="ill" data-f="img/ch4-01-hidden.png"><img src="img/ch4-01-hidden.png" alt="A castle in mist with a silhouette behind a curtain" onerror="this.parentNode.classList.add('miss')"><figcaption>We see the lantern, not the one who carries it.</figcaption></figure>
+  <p>The <b>Markov assumption</b>: tomorrow depends only on today. The current state summarizes everything needed to predict the next one.</p>
+</article>
+<article class="pg">
+  <p>States change with <b>transition probabilities</b>. Each row of the matrix adds up to 1:</p>
+  <div class="wrap"><table>
+    <tr><th>From \ To</th><th>Healthy</th><th>Faulty</th></tr>
+    <tr><td>Healthy</td><td>0.90</td><td>0.10</td></tr>
+    <tr><td>Faulty</td><td>0.20</td><td>0.80</td></tr>
+  </table></div>
+  <div class="box"><div class="formula">p(t+1) = p(t) × T</div>
+    <p>Today: Healthy 80%, Faulty 20%. Tomorrow: Healthy = 0.80 × 0.90 + 0.20 × 0.20 = <b>0.76</b>, so Faulty = 0.24.</p></div>
+<pre>import numpy as np
+T = np.array([[0.90, 0.10],
+              [0.20, 0.80]])
+p = np.array([0.80, 0.20])
+print(p @ T)   # [0.76 0.24]</pre>
+</article>
+<article class="pg">
+  <p>An HMM has three ingredients: <b>initial probabilities</b> π, <b>transitions</b> T and <b>emissions</b> O, which say which readings each hidden state likes to produce.</p>
+  <div class="wrap"><table>
+    <tr><th>State</th><th>Normal</th><th>High</th></tr>
+    <tr><td>Healthy</td><td>0.80</td><td>0.20</td></tr>
+    <tr><td>Faulty</td><td>0.30</td><td>0.70<i class="h" style="transform:rotate(-12deg);width:22px;height:22px" data-n="Beware Ogre"></i></td></tr>
+  </table></div>
+  <figure class="ill" data-f="img/ch4-02-clues.png"><img src="img/ch4-02-clues.png" alt="Dim windows above and glowing lanterns below linked by threads" onerror="this.parentNode.classList.add('miss')"><figcaption>Hidden states above, visible clues below.</figcaption></figure>
+  <div class="box"><p>P(High | Faulty) = 0.70 is <i>not</i> P(Faulty | High). To reverse it, use Bayes. Prior 80/20, reading High: Healthy 0.80 × 0.20 = 0.16, Faulty 0.20 × 0.70 = 0.14, normalize by 0.30, giving <b>53.3% / 46.7%</b>.</p></div>
+</article>
+<article class="pg">
+  <p><b>Filtering</b> estimates the current state from all readings so far: <b>predict</b> with T, <b>correct</b> with the emission, <b>normalize</b>. A second High reading:</p>
+  <div class="box"><p>Predict: [0.533, 0.467] × T = [0.573, 0.427]<br>Correct: [0.573 × 0.20, 0.427 × 0.70] = [0.115, 0.299]<br>Normalize: <b>[0.277, 0.723]</b>, so Faulty is now the likelier state.</p></div>
+  <figure class="ill" data-f="img/ch4-03-path.png"><img src="img/ch4-03-path.png" alt="A knight crossing a river on glowing stepping stones in fog" onerror="this.parentNode.classList.add('miss')"><figcaption>Viterbi keeps only the best stepping stones.</figcaption></figure>
+<pre>belief = np.array([.8, .2]); O = np.array([.2, .7])
+for t in range(2):          # two High readings
+    if t > 0:
+        belief = belief @ T # predict
+    belief = belief * O     # correct
+    belief /= belief.sum()  # normalize
+    print(t + 1, belief.round(3))</pre>
+</article>
+<article class="pg">
+  <p>The same model answers different questions:</p>
+  <div class="wrap"><table>
+    <tr><th>Question</th><th>Method</th></tr>
+    <tr><td>What is happening now?</td><td>Filtering: all readings so far</td></tr>
+    <tr><td>What will happen?</td><td>Prediction: p × T<sup>k</sup>, no new readings</td></tr>
+    <tr><td>What was happening then?</td><td>Smoothing: earlier and later readings (forward–backward)</td></tr>
+    <tr><td>Which path was the best?</td><td>Viterbi: one most probable state sequence</td></tr>
+  </table></div>
+  <div class="box"><p><b>Sum or max.</b> Forward adds the probability of all predecessor paths and returns state probabilities. Viterbi keeps only the best predecessor, stores backpointers, and returns one complete path.</p></div>
+  <p>Limits of a basic HMM: the hidden state follows a first-order Markov process, a reading depends only on the current state, and the probabilities must come from data or experts.</p>
+</article>
+<article class="pg">
+  <h2><small>Chapter IV</small>Test of Knowledge</h2>
+  <div class="q" data-a="1"><p>1. What does the emission probability P(High | Faulty) = 0.70 tell us?</p>
+    <button>The chance that a machine is faulty given a High reading</button><button>The chance of a High reading when the machine is faulty</button><button>The chance that a faulty machine becomes healthy</button>
+    <div class="no">Not quite. Emissions describe readings produced by a hidden state.</div><div class="ex">Correct: the state is the condition, the reading is the outcome.</div></div>
+  <div class="q" data-a="1"><p>2. Prior: Healthy 0.60, Faulty 0.40. P(High | Healthy) = 0.20, P(High | Faulty) = 0.70. After one High reading, P(Faulty) is…</p>
+    <button>40%</button><button>70%</button><button>28%</button>
+    <div class="no">Not quite. Multiply prior by likelihood for both states, then normalize.</div><div class="ex">Correct: 0.28 / (0.12 + 0.28) = 70%.</div></div>
+  <div class="q" data-a="0"><p>3. What is the key difference between Forward (filtering) and Viterbi?</p>
+    <button>Forward sums over predecessors and gives probabilities; Viterbi takes the max and gives one best path</button><button>Forward looks at the past, Viterbi at the future</button><button>Viterbi needs no transition matrix</button>
+    <div class="no">Not quite. Think SUM versus MAX.</div><div class="ex">Correct: same model, different goal.</div></div>
+  <i class="h a" style="left:3px;top:56%;transform:rotate(-14deg)" data-n="Beware Ogre"></i>
+</article>

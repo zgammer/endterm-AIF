@@ -1,0 +1,69 @@
+<article class="pg">
+  <h2><small>Chapter III</small>Probability and Bayesian Networks</h2>
+  <p class="drop">A smoke alarm rings. Is there a fire, burnt toast, or just a false alarm? AI almost never sees the world perfectly: sensors are noisy, events have several possible causes, and the same clue can support many stories. Probability tells us how strongly the evidence supports each one<i class="h" style="transform:rotate(-8deg)" data-n="Beware Ogre"></i>.</p>
+  <figure class="ill" data-f="img/ch3-01-alarm.png"><img src="img/ch3-01-alarm.png" alt="A bell tower with a ringing bell and a curious fox" onerror="this.parentNode.classList.add('miss')"><figcaption>An alarm is a clue, not a verdict.</figcaption></figure>
+  <p>A probability is a number from 0 to 1: P = 0.7 means “likely”, not “guaranteed”. A set of outcomes that exclude each other and cover everything always adds up to 1.</p>
+</article>
+<article class="pg">
+  <p>A monitor records the temperature (T) and the condition (F) of a machine. The <b>joint distribution</b> lists every combination:</p>
+  <div class="wrap"><table>
+    <tr><th>Temperature</th><th>Failure</th><th>Healthy</th></tr>
+    <tr><td>High</td><td>0.18</td><td>0.12</td></tr>
+    <tr><td>Normal</td><td>0.02<i class="h" style="transform:rotate(14deg);width:22px;height:22px" data-n="Beware Ogre"></i></td><td>0.68</td></tr>
+  </table></div>
+  <div class="box">
+    <p><b>Marginal:</b> add the cells you do not care about. P(Failure) = 0.18 + 0.02 = <b>0.20</b>.</p>
+    <p><b>Conditional:</b> look only at the cases where the condition holds.</p>
+    <div class="formula">P(A | B) = P(A, B) / P(B)</div>
+    <p>P(Failure | High) = 0.18 / 0.30 = <b>0.60</b>.</p>
+  </div>
+  <p>Before the evidence, the chance of failure was 20% (the <b>prior</b>). After seeing a high temperature it is 60% (the <b>posterior</b>). Evidence changes the population we look at.</p>
+</article>
+<article class="pg">
+  <div class="box">
+    <div class="formula">P(F | A) = P(A | F) · P(F) / P(A)</div>
+    <p>A factory has 5% faulty machines. The alarm catches 90% of faults, but it also rings for 10% of healthy machines. Out of 1,000 machines: 50 faulty give 45 alarms, 950 healthy give 95 false alarms. So P(Fault | Alarm) = 45 / 140 = <b>32.14%</b>.</p>
+  </div>
+  <figure class="ill" data-f="img/ch3-02-bayes.png"><img src="img/ch3-02-bayes.png" alt="An owl weighing a stone and a feather on a scale" onerror="this.parentNode.classList.add('miss')"><figcaption>Old belief against new evidence.</figcaption></figure>
+<pre>p_fault, sens, false_alarm = 0.05, 0.90, 0.10
+p_alarm = sens * p_fault + false_alarm * (1 - p_fault)
+posterior = sens * p_fault / p_alarm
+print(f"{posterior:.2%}")   # 32.14%</pre>
+</article>
+<article class="pg">
+  <p>A <b>Bayesian network</b> is a directed graph without loops: a node is a variable, an arrow is a direct influence, and each node has a small probability table (CPT) conditioned on its parents. Here: Fire → Smoke → Alarm.</p>
+  <figure class="ill" data-f="img/ch3-03-network.png"><img src="img/ch3-03-network.png" alt="A campfire, a cloud of smoke and an alarm bell linked by a ribbon" onerror="this.parentNode.classList.add('miss')"><figcaption>Causes point to effects; inference can walk backwards.</figcaption></figure>
+  <div class="wrap"><table>
+    <tr><th>Node</th><th>Table</th></tr>
+    <tr><td>Fire</td><td>P(F) = 0.02</td></tr>
+    <tr><td>Smoke</td><td>P(S | F) = 0.90,  P(S | ¬F) = 0.05</td></tr>
+    <tr><td>Alarm</td><td>P(A | S) = 0.95,  P(A | ¬S) = 0.01</td></tr>
+  </table></div>
+  <div class="box"><div class="formula">P(F, S, A) = P(F) · P(S | F) · P(A | S)</div>
+    <p>Summing out the hidden Smoke gives P(Fire | Alarm) = 0.01712 / 0.07298 ≈ <b>23.46%</b>. The alarm lifts the chance of fire from 2%, but does not prove it.</p></div>
+</article>
+<article class="pg">
+  <p><b>Inference</b> answers a question about hidden variables using evidence. The query here is Fire, the evidence is Alarm = yes, and Smoke is hidden.</p>
+  <div class="wrap"><table>
+    <tr><th>Method</th><th>Idea</th></tr>
+    <tr><td>Enumeration</td><td>sum over every hidden state; exact, good for small networks</td></tr>
+    <tr><td>Variable elimination</td><td>sum out hidden variables early and reuse the factors; exact</td></tr>
+    <tr><td>Rejection sampling</td><td>simulate cases and keep those that match the evidence; wasteful if the evidence is rare</td></tr>
+    <tr><td>Likelihood weighting</td><td>fix the evidence and weight each sample, so nothing is thrown away</td></tr>
+  </table></div>
+  <div class="box"><p><b>Explaining away.</b> The alarm sounds: a burglary becomes likelier. Then we learn that an earthquake happened: the burglary becomes less likely, because the alarm now has another explanation.</p></div>
+  <p>Sparse networks stay small: 20 binary variables need 2²⁰ ≈ one million joint entries, but only a few tiny tables if each node has few parents.</p>
+</article>
+<article class="pg">
+  <h2><small>Chapter III</small>Test of Knowledge</h2>
+  <div class="q" data-a="1"><p>1. A machine fails 20% of the time overall, and 60% when the temperature is high. What is 0.60?</p>
+    <button>P(High | Failure)</button><button>P(Failure | High)</button><button>P(High, Failure)</button>
+    <div class="no">Not quite. The condition is what comes after the bar “|”.</div><div class="ex">Correct: 0.60 = P(Failure | High) = 0.18 / 0.30.</div></div>
+  <div class="q" data-a="1"><p>2. Why is P(Fault | Alarm) only about 32% when the alarm detects 90% of faults?</p>
+    <button>The alarm is broken</button><button>Faults are rare, so false alarms outnumber true ones</button><button>Bayes’ theorem always halves the probability</button>
+    <div class="no">Not quite. Think about the 950 healthy machines.</div><div class="ex">Correct: 95 false alarms against 45 true ones, so 45 / 140 ≈ 32%.</div></div>
+  <div class="q" data-a="1"><p>3. How is the joint probability written in the network Fire → Smoke → Alarm?</p>
+    <button>P(F) × P(S) × P(A)</button><button>P(F) × P(S | F) × P(A | S)</button><button>P(F) + P(S | F) + P(A | S)</button>
+    <div class="no">Not quite. Each node is conditioned on its parents, and the factors are multiplied.</div><div class="ex">Correct: one local factor per node, multiplied together.</div></div>
+  <i class="h a" style="left:3px;top:58%;transform:rotate(16deg)" data-n="Beware Ogre"></i>
+</article>

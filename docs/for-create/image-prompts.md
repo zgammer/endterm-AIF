@@ -42,13 +42,29 @@
 **ch2-03-annealing.png**
 > A blacksmith in a leather apron stands at a glowing forge, lifting a red-hot piece of metal with tongs toward an anvil. Sparks fly upward in gold and orange. On the anvil, the metal glows bright yellow at one end and deep red at the other, showing the cooling process. A bucket of water sits nearby. Warm, dynamic composition with strong contrast between the fire and the dark background.
 
-## Главы III–VII (на будущее)
+## Глава III: вероятность и байесовские сети
 
-**ch3-probability.png**
+**ch3-01-alarm.png**
 > A stone bell tower on a hill, with a large bronze bell visibly ringing. A thin wisp of smoke rises from a distant chimney, while a sly red fox peeks from behind a bush on the right with a curious look. Villagers in the lower corner look up toward the bell, some worried, some unbothered. Conveys the idea that an alarm does not always mean fire.
 
-**ch4-hmm.png**
+**ch3-02-bayes.png**
+> A wise owl scholar in a tiny pointed hat sits on a stack of old books, holding a balance scale. On the left pan lies a small heavy stone (the old belief), on the right pan a glowing feather (new evidence), and the scale tips gently. A scroll and a quill lie nearby. Calm, scholarly mood.
+
+**ch3-03-network.png**
+> Three stations linked by a flowing ribbon from left to right: a small campfire, a puffy cloud of smoke, and a bronze alarm bell on a post. Curling vines with arrowheads between them point left to right. A tiny knight inspects the bell and looks back toward the fire, suggesting reasoning backwards from effect to cause.
+
+## Глава IV: скрытые марковские модели
+
+**ch4-01-hidden.png**
 > A dark stone castle wrapped in mist. Only a silhouette of a tall figure is visible behind a pale curtain in one window, and a small lantern glows in a lower window. On the muddy path below, faint footprints lead away from the castle. The scene suggests that a hidden presence is inferred from clues, not seen directly.
+
+**ch4-02-clues.png**
+> Two rows. The upper row is a line of dim arched windows, each holding a different shadowy silhouette (calm, restless, ailing) in faded blue. The lower row is a line of hanging lanterns glowing in different colors (green, amber, red). Thin golden threads link each window to the lantern below it, suggesting hidden states that emit visible signals.
+
+**ch4-03-path.png**
+> A knight walking across a river on a line of flat stepping stones through drifting fog. A few stones glow gold and form the single best path, while the others are dim. Small arrows carved into the stones point forward. Moonlit, calm mood.
+
+## Главы V–VII (на будущее)
 
 **ch5-decisions.png**
 > A knight stands before an old wooden balance scale. On one pan lies a heavy sack of gold coins, and on the other a shining round shield. The scale is tipping slightly toward the shield. A small scroll with a simple table of numbers (drawn as abstract lines, no legible text) rests on a stone pedestal beside him. Thoughtful, measured mood.
