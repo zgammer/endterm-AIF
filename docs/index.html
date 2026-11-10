@@ -22,9 +22,9 @@
   <h2><small>Chapter I</small>Pathfinding: BFS, DFS, UCS and A*</h2>
   <p class="drop">Once upon a time, an agent had to travel from START to GOAL. A story becomes a problem when it has four parts: a <b>state space</b>, a <b>successor function</b> (actions and their costs), a <b>start state</b> and a <b>goal test</b>. The solution is a sequence of actions that leads from START to GOAL<i class="h" style="transform:rotate(-12deg)" data-n="Beware Ogre"></i>.</p>
   <figure class="ill" data-f="img/ch1-01-quest.png"><img src="img/ch1-01-quest.png" alt="A knight at a castle gate with a road to a distant tower" onerror="this.parentNode.classList.add('miss')"><figcaption>More than one road leads from START to GOAL.</figcaption></figure>
-  <p>Every algorithm grows a “what if” tree: the root is the start, the children are the results of actions. There is only one question: <b>which node of the fringe should we expand next?</b></p>
 </article>
 <article class="pg">
+  <p>Every algorithm grows a “what if” tree: the root is the start, the children are the results of actions. There is only one question: <b>which node of the fringe should we expand next?</b></p>
   <p>The algorithms differ only in their fringe policy:</p>
   <div class="wrap"><table>
     <tr><th>Algorithm</th><th>Picks the node</th><th>Structure</th></tr>
@@ -33,13 +33,15 @@
     <tr><td>UCS</td><td>lowest g(n)</td><td>priority queue</td></tr>
     <tr><td>A*</td><td>lowest g(n)+h(n)<i class="h" style="transform:rotate(15deg);width:22px;height:22px" data-n="Beware Ogre"></i></td><td>priority queue</td></tr>
   </table></div>
-  <figure class="ill" data-f="img/ch1-02-fringe.png"><img src="img/ch1-02-fringe.png" alt="A tree of roads with a lantern-bearing knight" onerror="this.parentNode.classList.add('miss')"><figcaption>The fringe: which branch should we light up first?</figcaption></figure>
 </article>
 <article class="pg">
+  <figure class="ill" data-f="img/ch1-02-fringe.png"><img src="img/ch1-02-fringe.png" alt="A tree of roads with a lantern-bearing knight" onerror="this.parentNode.classList.add('miss')"><figcaption>The fringe: which branch should we light up first?</figcaption></figure>
   <div class="box">
     <div class="formula">f(n) = g(n) + h(n)</div>
     <p>g(n) is what we have already paid, h(n) is the estimate of what is left, f(n) is the estimated total. Example: node A (g=4, h=8, f=12) and node B (g=7, h=2, f=9). A* expands B because 9 &lt; 12: it is willing to pay more now for a better total.</p>
   </div>
+</article>
+<article class="pg">
   <figure class="ill" data-f="img/ch1-03-astar.png"><img src="img/ch1-03-astar.png" alt="A knight with a spyglass and signposts" onerror="this.parentNode.classList.add('miss')"><figcaption>A heuristic is a spyglass, not a map.</figcaption></figure>
   <p>BFS finds the path with the fewest steps, but not the cheapest one. If edges have different costs, use UCS, and with a good heuristic use A*.</p>
 <pre>from collections import deque
@@ -66,21 +68,21 @@ def bfs(graph, start, goal):
   <i class="h a" style="right:3px;top:46%;transform:rotate(-25deg)" data-n="Beware Ogre"></i>
 </article>
 
-<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
-
 <article class="pg">
   <h2><small>Chapter II</small>Local Search: Climbing the Hill</h2>
   <p class="drop">Sometimes the road does not matter, only the castle we arrive at. Then we search not for a path but for a <b>complete configuration</b>: a placement of queens, a traveling salesman’s route. A configuration has <b>neighbors</b> (small changes) and an <b>objective function</b>, a number we maximize or minimize. Only the current state is stored, so almost no memory is needed<i class="h" style="transform:rotate(10deg)" data-n="Beware Ogre"></i>.</p>
   <figure class="ill" data-f="img/ch2-01-landscape.png"><img src="img/ch2-01-landscape.png" alt="Hills with two peaks and a knight" onerror="this.parentNode.classList.add('miss')"><figcaption>The landscape: a low peak nearby, a high one far away.</figcaption></figure>
-  <p><b>Hill climbing</b> looks at the neighbors and moves to the best one; when none is better, it stops. It is fast, but it falls into traps: a <b>local maximum</b> (a peak lower than the best one), a <b>plateau</b> (everything is equal) and a <b>ridge</b>.</p>
 </article>
 <article class="pg">
+  <p><b>Hill climbing</b> looks at the neighbors and moves to the best one; when none is better, it stops. It is fast, but it falls into traps: a <b>local maximum</b> (a peak lower than the best one), a <b>plateau</b> (everything is equal) and a <b>ridge</b>.</p>
   <div class="box"><p>Landscape <b>[1, 4, 7, 5, 3, 6, 9, 8]</b>. From index 0 the algorithm walks 1 → 4 → 7 and stops: both neighbors are worse. But index 6 holds the value 9, the global maximum.<i class="h a" style="right:6px;bottom:4px;width:24px;height:24px;transform:rotate(30deg)" data-n="Beware Ogre"></i></p></div>
   <figure class="ill" data-f="img/ch2-02-restarts.png"><img src="img/ch2-02-restarts.png" alt="Three knights starting from different hills" onerror="this.parentNode.classList.add('miss')"><figcaption>Random restarts: every knight has his own hill.</figcaption></figure>
-  <p><b>Random restarts</b>: run hill climbing from different points and keep the best result. <b>Simulated annealing</b> can temporarily accept a worse move: at a high temperature T this happens often, and as the system cools, more and more rarely.</p>
 </article>
 <article class="pg">
+  <p><b>Random restarts</b>: run hill climbing from different points and keep the best result. <b>Simulated annealing</b> can temporarily accept a worse move: at a high temperature T this happens often, and as the system cools, more and more rarely.</p>
   <figure class="ill" data-f="img/ch2-03-annealing.png"><img src="img/ch2-03-annealing.png" alt="A blacksmith at a forge with cooling metal" onerror="this.parentNode.classList.add('miss')"><figcaption>Annealing: free and hot at first, stricter later.</figcaption></figure>
+</article>
+<article class="pg">
   <div class="box"><div class="formula">ΔE = next − current;  P(accept worse) = exp(ΔE / T)</div></div>
 <pre>import random, math
 def anneal(values, start, T=10):
@@ -104,10 +106,8 @@ def anneal(values, start, T=10):
   <div class="q" data-a="0"><p>3. Hill climbing on [1, 4, 7, 5, 3, 6, 9, 8] starting at index 0 returns the value…</p>
     <button>7</button><button>9</button><button>8</button>
     <div class="no">Not quite. Walk through it: 1 → 4 → 7, and then the neighbors are worse.</div><div class="ex">Correct: 7 is a local maximum, and reaching 9 requires passing through a worse value.</div></div>
-  <i class="h a" style="right:14px;top:55%;transform:rotate(18deg)" data-n="Beware Ogre"></i>
+  <i class="h a" style="left:3px;top:55%;transform:rotate(18deg)" data-n="Beware Ogre"></i>
 </article>
-
-<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
 
 <article class="pg">
   <h2><small>Chapter III</small>Probability and Bayesian Networks</h2>
@@ -150,10 +150,10 @@ print(f"{posterior:.2%}")   # 32.14%</pre>
     <tr><td>Smoke</td><td>P(S | F) = 0.90,  P(S | ¬F) = 0.05</td></tr>
     <tr><td>Alarm</td><td>P(A | S) = 0.95,  P(A | ¬S) = 0.01</td></tr>
   </table></div>
-  <div class="box"><div class="formula">P(F, S, A) = P(F) · P(S | F) · P(A | S)</div>
-    <p>Summing out the hidden Smoke gives P(Fire | Alarm) = 0.01712 / 0.07298 ≈ <b>23.46%</b>. The alarm lifts the chance of fire from 2%, but does not prove it.</p></div>
 </article>
 <article class="pg">
+  <div class="box"><div class="formula">P(F, S, A) = P(F) · P(S | F) · P(A | S)</div>
+    <p>Summing out the hidden Smoke gives P(Fire | Alarm) = 0.01712 / 0.07298 ≈ <b>23.46%</b>. The alarm lifts the chance of fire from 2%, but does not prove it.</p></div>
   <p><b>Inference</b> answers a question about hidden variables using evidence. The query here is Fire, the evidence is Alarm = yes, and Smoke is hidden.</p>
   <div class="wrap"><table>
     <tr><th>Method</th><th>Idea</th></tr>
@@ -162,6 +162,8 @@ print(f"{posterior:.2%}")   # 32.14%</pre>
     <tr><td>Rejection sampling</td><td>simulate cases and keep those that match the evidence; wasteful if the evidence is rare</td></tr>
     <tr><td>Likelihood weighting</td><td>fix the evidence and weight each sample, so nothing is thrown away</td></tr>
   </table></div>
+</article>
+<article class="pg">
   <div class="box"><p><b>Explaining away.</b> The alarm sounds: a burglary becomes likelier. Then we learn that an earthquake happened: the burglary becomes less likely, because the alarm now has another explanation.</p></div>
   <p>Sparse networks stay small: 20 binary variables need 2²⁰ ≈ one million joint entries, but only a few tiny tables if each node has few parents.</p>
 </article>
@@ -178,8 +180,6 @@ print(f"{posterior:.2%}")   # 32.14%</pre>
     <div class="no">Not quite. Each node is conditioned on its parents, and the factors are multiplied.</div><div class="ex">Correct: one local factor per node, multiplied together.</div></div>
   <i class="h a" style="left:3px;top:58%;transform:rotate(16deg)" data-n="Beware Ogre"></i>
 </article>
-
-<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
 
 <article class="pg">
   <h2><small>Chapter IV</small>Hidden Markov Models</h2>
@@ -210,11 +210,13 @@ print(p @ T)   # [0.76 0.24]</pre>
     <tr><td>Faulty</td><td>0.30</td><td>0.70<i class="h" style="transform:rotate(-12deg);width:22px;height:22px" data-n="Beware Ogre"></i></td></tr>
   </table></div>
   <figure class="ill" data-f="img/ch4-02-clues.png"><img src="img/ch4-02-clues.png" alt="Dim windows above and glowing lanterns below linked by threads" onerror="this.parentNode.classList.add('miss')"><figcaption>Hidden states above, visible clues below.</figcaption></figure>
-  <div class="box"><p>P(High | Faulty) = 0.70 is <i>not</i> P(Faulty | High). To reverse it, use Bayes. Prior 80/20, reading High: Healthy 0.80 × 0.20 = 0.16, Faulty 0.20 × 0.70 = 0.14, normalize by 0.30, giving <b>53.3% / 46.7%</b>.</p></div>
 </article>
 <article class="pg">
+  <div class="box"><p>P(High | Faulty) = 0.70 is <i>not</i> P(Faulty | High). To reverse it, use Bayes. Prior 80/20, reading High: Healthy 0.80 × 0.20 = 0.16, Faulty 0.20 × 0.70 = 0.14, normalize by 0.30, giving <b>53.3% / 46.7%</b>.</p></div>
   <p><b>Filtering</b> estimates the current state from all readings so far: <b>predict</b> with T, <b>correct</b> with the emission, <b>normalize</b>. A second High reading:</p>
   <div class="box"><p>Predict: [0.533, 0.467] × T = [0.573, 0.427]<br>Correct: [0.573 × 0.20, 0.427 × 0.70] = [0.115, 0.299]<br>Normalize: <b>[0.277, 0.723]</b>, so Faulty is now the likelier state.</p></div>
+</article>
+<article class="pg">
   <figure class="ill" data-f="img/ch4-03-path.png"><img src="img/ch4-03-path.png" alt="A knight crossing a river on glowing stepping stones in fog" onerror="this.parentNode.classList.add('miss')"><figcaption>Viterbi keeps only the best stepping stones.</figcaption></figure>
 <pre>belief = np.array([.8, .2]); O = np.array([.2, .7])
 for t in range(2):          # two High readings

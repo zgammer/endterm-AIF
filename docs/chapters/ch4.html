@@ -27,11 +27,13 @@ print(p @ T)   # [0.76 0.24]</pre>
     <tr><td>Faulty</td><td>0.30</td><td>0.70<i class="h" style="transform:rotate(-12deg);width:22px;height:22px" data-n="Beware Ogre"></i></td></tr>
   </table></div>
   <figure class="ill" data-f="img/ch4-02-clues.png"><img src="img/ch4-02-clues.png" alt="Dim windows above and glowing lanterns below linked by threads" onerror="this.parentNode.classList.add('miss')"><figcaption>Hidden states above, visible clues below.</figcaption></figure>
-  <div class="box"><p>P(High | Faulty) = 0.70 is <i>not</i> P(Faulty | High). To reverse it, use Bayes. Prior 80/20, reading High: Healthy 0.80 × 0.20 = 0.16, Faulty 0.20 × 0.70 = 0.14, normalize by 0.30, giving <b>53.3% / 46.7%</b>.</p></div>
 </article>
 <article class="pg">
+  <div class="box"><p>P(High | Faulty) = 0.70 is <i>not</i> P(Faulty | High). To reverse it, use Bayes. Prior 80/20, reading High: Healthy 0.80 × 0.20 = 0.16, Faulty 0.20 × 0.70 = 0.14, normalize by 0.30, giving <b>53.3% / 46.7%</b>.</p></div>
   <p><b>Filtering</b> estimates the current state from all readings so far: <b>predict</b> with T, <b>correct</b> with the emission, <b>normalize</b>. A second High reading:</p>
   <div class="box"><p>Predict: [0.533, 0.467] × T = [0.573, 0.427]<br>Correct: [0.573 × 0.20, 0.427 × 0.70] = [0.115, 0.299]<br>Normalize: <b>[0.277, 0.723]</b>, so Faulty is now the likelier state.</p></div>
+</article>
+<article class="pg">
   <figure class="ill" data-f="img/ch4-03-path.png"><img src="img/ch4-03-path.png" alt="A knight crossing a river on glowing stepping stones in fog" onerror="this.parentNode.classList.add('miss')"><figcaption>Viterbi keeps only the best stepping stones.</figcaption></figure>
 <pre>belief = np.array([.8, .2]); O = np.array([.2, .7])
 for t in range(2):          # two High readings

@@ -2,9 +2,9 @@
   <h2><small>Chapter I</small>Pathfinding: BFS, DFS, UCS and A*</h2>
   <p class="drop">Once upon a time, an agent had to travel from START to GOAL. A story becomes a problem when it has four parts: a <b>state space</b>, a <b>successor function</b> (actions and their costs), a <b>start state</b> and a <b>goal test</b>. The solution is a sequence of actions that leads from START to GOAL<i class="h" style="transform:rotate(-12deg)" data-n="Beware Ogre"></i>.</p>
   <figure class="ill" data-f="img/ch1-01-quest.png"><img src="img/ch1-01-quest.png" alt="A knight at a castle gate with a road to a distant tower" onerror="this.parentNode.classList.add('miss')"><figcaption>More than one road leads from START to GOAL.</figcaption></figure>
-  <p>Every algorithm grows a “what if” tree: the root is the start, the children are the results of actions. There is only one question: <b>which node of the fringe should we expand next?</b></p>
 </article>
 <article class="pg">
+  <p>Every algorithm grows a “what if” tree: the root is the start, the children are the results of actions. There is only one question: <b>which node of the fringe should we expand next?</b></p>
   <p>The algorithms differ only in their fringe policy:</p>
   <div class="wrap"><table>
     <tr><th>Algorithm</th><th>Picks the node</th><th>Structure</th></tr>
@@ -13,13 +13,15 @@
     <tr><td>UCS</td><td>lowest g(n)</td><td>priority queue</td></tr>
     <tr><td>A*</td><td>lowest g(n)+h(n)<i class="h" style="transform:rotate(15deg);width:22px;height:22px" data-n="Beware Ogre"></i></td><td>priority queue</td></tr>
   </table></div>
-  <figure class="ill" data-f="img/ch1-02-fringe.png"><img src="img/ch1-02-fringe.png" alt="A tree of roads with a lantern-bearing knight" onerror="this.parentNode.classList.add('miss')"><figcaption>The fringe: which branch should we light up first?</figcaption></figure>
 </article>
 <article class="pg">
+  <figure class="ill" data-f="img/ch1-02-fringe.png"><img src="img/ch1-02-fringe.png" alt="A tree of roads with a lantern-bearing knight" onerror="this.parentNode.classList.add('miss')"><figcaption>The fringe: which branch should we light up first?</figcaption></figure>
   <div class="box">
     <div class="formula">f(n) = g(n) + h(n)</div>
     <p>g(n) is what we have already paid, h(n) is the estimate of what is left, f(n) is the estimated total. Example: node A (g=4, h=8, f=12) and node B (g=7, h=2, f=9). A* expands B because 9 &lt; 12: it is willing to pay more now for a better total.</p>
   </div>
+</article>
+<article class="pg">
   <figure class="ill" data-f="img/ch1-03-astar.png"><img src="img/ch1-03-astar.png" alt="A knight with a spyglass and signposts" onerror="this.parentNode.classList.add('miss')"><figcaption>A heuristic is a spyglass, not a map.</figcaption></figure>
   <p>BFS finds the path with the fewest steps, but not the cheapest one. If edges have different costs, use UCS, and with a good heuristic use A*.</p>
 <pre>from collections import deque
