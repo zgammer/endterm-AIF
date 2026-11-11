@@ -344,9 +344,6 @@ for t in range(2):          # two High readings
   <div class="q" data-a="0"><p>3. What does an MDP solution give that a single search path does not?</p>
     <button>A policy: what to do from every state</button><button>A list of past rewards</button><button>A guarantee that nothing goes wrong</button>
     <div class="no">If a move slips, the old path is useless. What covers every situation?</div><div class="ex">A policy maps each state to an action, so the agent still knows what to do after a slip.</div></div>
-  <div class="q" data-a="2"><p>4. Q(A,LEFT) = 2, Q(A,RIGHT) = 8, Q(A,UP) = 4, Q(A,DOWN) = −5. What is V*(A)?</p>
-    <button>2</button><button>−5</button><button>8</button>
-    <div class="no">V* is the value of the best action.</div><div class="ex">V*(A) = max Q*(A,a) = 8, reached by going RIGHT.</div></div>
 </article>
 
 <div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
@@ -433,12 +430,167 @@ new_q    = current_q + alpha * td_error</pre>
   <div class="q" data-a="0"><p>3. Which knob sets how often the agent tries a random action?</p>
     <button>ε, the exploration rate</button><button>α, the learning rate</button><button>γ, the discount factor</button>
     <div class="no">One knob is about exploring, one about update size, one about the future.</div><div class="ex">ε is the chance of an exploratory move; α sets update size and γ weights the future.</div></div>
-  <div class="q" data-a="1"><p>4. How does SARSA differ from Q-learning?</p>
-    <button>It needs a full model of the world</button><button>It uses the next action actually taken, so it is on-policy</button><button>It never updates a Q-table</button>
-    <div class="no">The name lists the tuple it uses: (s, a, r, s′, a′).</div><div class="ex">SARSA's target uses Q(s′,a′) for the action the behavior policy actually chose.</div></div>
-  <div class="q" data-a="2"><p>5. Why does a plain Q-table stop working for large problems?</p>
-    <button>Q-values become negative</button><button>Rewards disappear</button><button>Too many (or continuous) states, so we need function approximation</button>
-    <div class="no">Think about how many cells the battery example needs.</div><div class="ex">A table needs one entry per state-action pair, which becomes impossible for millions of states, images or continuous sensors.</div></div>
+</article>
+
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+
+<!-- Chapter VII: Rational decisions. Source: Rational Decisions & Classical ML lecture, parts 1-3 and 7 (the maintenance chain). -->
+<article class="pg">
+  <h2><small>Chapter VII</small>Weighing Fate</h2>
+  <p class="drop">Our knight has learned to search, to guess and to learn from wandering. Now he must <i>choose</i> when the world will not tell him what comes next. A <b>rational</b> agent looks at the evidence it has right now, weighs the possible outcomes and picks the best action. It is judged by that choice, not by hindsight. If the dice fall badly, the choice was not necessarily foolish. An <b>omniscient</b> agent, one who already knows the future, does not exist in real life, so every real agent chooses under doubt.</p>
+  <figure class="ill" data-f="img/ch7-01-scales.png"><img src="img/ch7-01-scales.png" alt="A knight weighing a bag of gold against a shield on a wooden scale" onerror="this.parentNode.classList.add('miss')"><figcaption>Judge the choice by what was known when it was made.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>The Rule of the Best Bet</h2>
+  <p>The agent repeats a loop: <b>sensors</b> observe, a <b>belief state</b> guesses what is happening, a <b>decision rule</b> compares the actions, and <b>actuators</b> carry one out. The decision rule is this:</p>
+  <div class="formula">a* = arg max<sub>a</sub> E[ U | a, e ]</div>
+  <p>Here a is a candidate action, e is the evidence at hand, U is the utility (a score of how much we like an outcome) and E is the probability-weighted average. Note that arg max returns the <i>action</i>, not the best score.</p>
+  <p>A delivery robot may take a short route or a safe route. The shortest path is not always the best decision once collision risk and delay costs are counted.</p>
+  <i class="h a" style="right:10px;bottom:30%;transform:rotate(-10deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>Odds Are Not Enough</h2>
+  <p class="drop">A 90% chance of success sounds fine, until failure is a catastrophe. So a rational agent combines probability <i>and</i> utility. The <b>expected utility</b> of an action is the sum, over its outcomes, of probability times utility:</p>
+  <div class="formula">EU(a) = Σ<sub>i</sub> P(o<sub>i</sub> | a) × U(o<sub>i</sub>)</div>
+  <table>
+    <tr><th>Project</th><th>Success</th><th>Failure</th><th>Expected utility</th></tr>
+    <tr><td>A</td><td>90% → +100</td><td>10% → −20</td><td>0.9·100 + 0.1·(−20) = 88</td></tr>
+    <tr><td>B</td><td>60% → +200</td><td>40% → −50</td><td>0.6·200 + 0.4·(−50) = 100</td></tr>
+  </table>
+  <p>Project B is riskier, yet it wins by <b>maximum expected utility</b> (MEU), because its rewards are larger.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>Brave, Careful or Neutral?</h2>
+  <p>People differ in how they treat risk. A <b>risk-neutral</b> chooser maximizes the plain average and has utility that grows in a straight line with money. A <b>risk-averse</b> chooser dislikes large losses, so their utility curve is concave and they may prefer the steadier prize. If safety rules forbid some actions, we maximize only over the feasible ones.</p>
+  <pre>actions = {'A': ([0.9, 0.1], [100, -20]),
+           'B': ([0.6, 0.4], [200, -50])}
+def EU(probs, utils):
+    return sum(p*u for p, u in zip(probs, utils))
+scores = {n: EU(*v) for n, v in actions.items()}
+print(max(scores, key=scores.get))   # B</pre>
+  <p>Four lines, and the scroll names the winner: multiply, add, take the arg max.</p>
+  <i class="h a" style="left:12px;bottom:10%;transform:rotate(8deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>Updating What We Believe</h2>
+  <p class="drop">The true state may be hidden, and sensors are noisy. <b>Bayes' theorem</b> updates a belief when evidence D arrives about a hypothesis H (say, a failing machine):</p>
+  <div class="formula">P(H | D) = P(D | H) · P(H) / P(D)</div>
+  <p>The denominator counts both ways the evidence can appear: P(D) = P(D|H)P(H) + P(D|¬H)P(¬H). Forget the false alarms and the posterior is badly inflated.</p>
+  <p>Try it. A mill machine fails 5% of the time. An alarm sounds for 90% of real failures and also for 10% of healthy runs. Then P(alarm) = 0.9·0.05 + 0.1·0.95 = 0.14, and P(failure | alarm) = 0.045 / 0.14 ≈ 0.32. A loud alarm lifts the risk from 5% to about 32%, not to 90%.</p>
+  <figure class="ill" data-f="img/ch7-02-bayes.png"><img src="img/ch7-02-bayes.png" alt="A mill with an alarm bell and a scroll of weights" onerror="this.parentNode.classList.add('miss')"><figcaption>Belief tells us what is probably true, not yet what to do.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>From Belief to Action</h2>
+  <p><b>Bayes tells us what to believe; decision theory tells us what to do.</b> If the failure probability is p and a failure costs C<sub>failure</sub>, then continuing has expected cost p × C<sub>failure</sub>. Maintenance costs C<sub>maint</sub> and is assumed to prevent the failure. So:</p>
+  <div class="formula">Maintain if p<sub>failure</sub> &gt; C<sub>maint</sub> / C<sub>failure</sub></div>
+  <p>With maintenance at $2,000 and failure at $10,000, the threshold is 2,000 / 10,000 = 0.20:</p>
+  <table>
+    <tr><th>Failure risk</th><th>10%</th><th>20%</th><th>30%</th><th>50%</th></tr>
+    <tr><td>Expected cost of continuing</td><td>$1,000</td><td>$2,000</td><td>$3,000</td><td>$5,000</td></tr>
+  </table>
+  <p>Our mill's alarm gave about 32%, so the knight orders maintenance. The 20% comes from <i>costs</i>, not from model accuracy: if failure were costlier, the threshold would drop.</p>
+  <figure class="ill" data-f="img/ch7-03-threshold.png"><img src="img/ch7-03-threshold.png" alt="A gate at a river with a line marking a threshold" onerror="this.parentNode.classList.add('miss')"><figcaption>The line is drawn by the price of being wrong.</figcaption></figure>
+  <i class="h a" style="left:10px;top:42%;transform:rotate(-7deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>The Trial of Reason</h2>
+  <div class="q" data-a="1"><p>1. A rational agent's choice turns out badly. What does that show?</p>
+    <button>The agent was irrational</button><button>Nothing by itself: rationality is judged by the evidence available at the time</button><button>The agent should have been omniscient</button>
+    <div class="no">Ask whether the decision used the information it had.</div><div class="ex">Rationality is about maximizing expected performance given available evidence, so a bad result does not prove a bad choice.</div></div>
+  <div class="q" data-a="2"><p>2. Project B: 60% chance of +200, 40% chance of −50. What is its expected utility?</p>
+    <button>150</button><button>70</button><button>100</button>
+    <div class="no">Compute 0.6 × 200 and 0.4 × (−50), then add.</div><div class="ex">120 − 20 = 100, higher than Project A's 88.</div></div>
+  <div class="q" data-a="0"><p>3. Maintenance costs $2,000 and an unprevented failure costs $10,000. At which failure risk does maintenance become worthwhile?</p>
+    <button>Above 20%</button><button>Above 50%</button><button>Only when risk is 100%</button>
+    <div class="no">Divide the maintenance cost by the failure cost.</div><div class="ex">The threshold is 2,000 / 10,000 = 0.20.</div></div>
+</article>
+
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+
+<!-- Chapter VIII: Classical machine learning. Source: Rational Decisions & Classical ML lecture, parts 4-6 and evaluation. -->
+<article class="pg">
+  <h2><small>Chapter VIII</small>The Apprentice Learns</h2>
+  <p class="drop">In the old way, a person writes every rule: <i>if the temperature is above 80, ring the alarm</i>. But real data are noisy, thresholds overlap and patterns bend. So the apprentice does something different. He studies examples and outcomes, and a learning algorithm finds the rules itself. We write it ŷ = f<sub>θ</sub>(x): features x go in (say temperature and vibration), learned parameters θ shape the mapping f, and a prediction ŷ comes out, a number or a class.</p>
+  <figure class="ill" data-f="img/ch8-01-apprentice.png"><img src="img/ch8-01-apprentice.png" alt="An apprentice studying a table of examples while a master holds a rulebook" onerror="this.parentNode.classList.add('miss')"><figcaption>Rules written by hand, or rules found in examples.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>The Workshop Routine</h2>
+  <p>Every learning project follows five steps: <b>collect</b> labeled examples, <b>split</b> them into training and test sets, <b>fit</b> the model, <b>evaluate</b> it on unseen data, then <b>deploy</b> it on new cases. One law must never be broken: test information must not leak into fitting, or the grade means nothing.</p>
+  <p>The kind of feedback the teacher gives defines three paradigms:</p>
+  <table>
+    <tr><th></th><th>Supervised</th><th>Unsupervised</th><th>Reinforcement</th></tr>
+    <tr><td>Signal</td><td>Correct labels</td><td>No labels</td><td>Rewards</td></tr>
+    <tr><td>Goal</td><td>Predict a target</td><td>Find structure</td><td>Maximize reward</td></tr>
+    <tr><td>Output</td><td>Class or number</td><td>Clusters</td><td>Policy</td></tr>
+  </table>
+  <p>The same machine data can serve all three: <i>will it fail?</i> (supervised), <i>which operating modes exist?</i> (unsupervised), <i>when should we maintain it?</i> (reinforcement).</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Numbers and Labels</h2>
+  <p class="drop"><b>Regression</b> predicts a continuous number such as energy demand or a price. <b>Classification</b> predicts a class or its probability, such as failure or fraud. The simplest regression draws a line: ŷ = wx + b. If consumption = 5 × temperature + 100, then at 30°C we predict 250 kWh.</p>
+  <p>How do we pick the line? By minimizing the average squared error:</p>
+  <div class="formula">MSE = (1/n) Σ<sub>i</sub> (y<sub>i</sub> − ŷ<sub>i</sub>)²</div>
+  <p>Squaring punishes big misses: an error of 10 costs 100, an error of 2 only 4. For regression we judge models by MAE, RMSE and R²; for classification by precision, recall and F1.</p>
+  <p>Fit the five readings (15, 174), (20, 201), (25, 224), (30, 251), (35, 278) and you get a slope near 5.16 and an intercept near 96.6, so 32°C predicts about 262 kWh.</p>
+  <i class="h a" style="right:10px;bottom:12%;transform:rotate(-9deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>From Score to Probability</h2>
+  <p><b>Logistic regression</b> turns a linear score into a probability with the sigmoid, an S-shaped curve:</p>
+  <div class="formula">σ(z) = 1 / (1 + e<sup>−z</sup>), &nbsp; P(y=1 | x) = σ(wᵀx + b)</div>
+  <table>
+    <tr><th>z</th><th>−2</th><th>−1</th><th>0</th><th>1</th><th>2</th></tr>
+    <tr><td>σ(z)</td><td>0.119</td><td>0.269</td><td>0.5</td><td>0.731</td><td>0.881</td></tr>
+  </table>
+  <p>A probability is not yet a decision. We predict failure when P(failure | x) ≥ τ. The threshold τ is a <i>policy</i>, not a law of the model. The default 0.5 is not always best: when failures are costly, τ may be 0.2 or lower, and a lower τ catches more real failures.</p>
+  <p>It echoes the last chapter: the cost-based threshold 2,000 / 10,000 = 0.20 is exactly such a τ.</p>
+  <i class="h a" style="left:10px;bottom:8%;transform:rotate(7deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Trees and Forests</h2>
+  <p class="drop">A <b>decision tree</b> is a ladder of if–then questions: is the temperature above 70°C? Is the vibration above 3? Its rules can be read aloud, it bends around nonlinear patterns and needs little preprocessing. But a deep tree may overfit, and a small change in the data can grow a different tree. A <b>random forest</b> plants many trees: each sees a bootstrap sample of the rows and a random subset of features, and the forest votes. Averaging many diverse trees usually reduces variance, at the cost of being harder to explain.</p>
+  <figure class="ill" data-f="img/ch8-02-forest.png"><img src="img/ch8-02-forest.png" alt="One tree with signposts on its branches beside a forest of many trees" onerror="this.parentNode.classList.add('miss')"><figcaption>One tree is easy to read; a forest is steadier.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Finding Groups</h2>
+  <p>Sometimes no one has labeled the data. <b>K-Means</b> finds groups by similarity in four moves: choose K centroids; assign each point to its nearest centroid; move each centroid to the mean of its points; repeat until nothing changes. It minimizes the within-cluster squared distance:</p>
+  <div class="formula">J = Σ<sub>k</sub> Σ<sub>x∈C<sub>k</sub></sub> ‖x − μ<sub>k</sub>‖²</div>
+  <p>Features with big units (spending in dollars next to purchase counts) would dominate the distance, so we <b>scale</b> them first. Cluster numbers are only names: cluster 2 is not &ldquo;better&rdquo; than cluster 0. The algorithm finds the groups, but people must decide what they mean.</p>
+  <pre>X_scaled = StandardScaler().fit_transform(X)
+km = KMeans(n_clusters=3, n_init=10, random_state=42)
+labels = km.fit_predict(X_scaled)</pre>
+  <i class="h a" style="right:12px;top:40%;transform:rotate(11deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Is the Model Any Good?</h2>
+  <p class="drop">Suppose only 2% of observations are failures. A lazy model that always says &ldquo;normal&rdquo; scores 98% <b>accuracy</b> and finds 0% of failures. So we also measure <b>recall</b> = TP / (TP + FN), the share of real failures caught, and <b>precision</b> = TP / (TP + FP), the share of alarms that are real. F1 = 2PR / (P + R) balances the two, though not the actual costs. Model A (accuracy 95%, recall 60%) may be worse than Model B (accuracy 92%, recall 90%) when missed failures are dangerous.</p>
+  <p>Evaluate honestly: learn on the <i>train</i> split, tune on <i>validation</i>, report on <i>test</i>, then check calibration, since a 70% prediction should come true about 70% of the time. Beware overfitting, data leakage, distribution shift and miscalibration. For rational decisions, trustworthy probabilities can matter more than raw accuracy.</p>
+  <figure class="ill" data-f="img/ch8-03-trust.png"><img src="img/ch8-03-trust.png" alt="A guard checking alarms from a tower against real fires" onerror="this.parentNode.classList.add('miss')"><figcaption>An alarm is only as good as the fires it finds.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>The Trial of the Apprentice</h2>
+  <div class="q" data-a="2"><p>1. Only 2% of cases are failures. A model that always predicts &ldquo;normal&rdquo; has what accuracy and failure recall?</p>
+    <button>2% and 98%</button><button>50% and 50%</button><button>98% and 0%</button>
+    <div class="no">It is right on all normal cases, and it never detects a failure.</div><div class="ex">Accuracy = 98%, recall = 0 / (number of failures) = 0%. Accuracy hides the problem.</div></div>
+  <div class="q" data-a="0"><p>2. K-Means is which kind of learning?</p>
+    <button>Unsupervised: it finds groups without labels</button><button>Supervised: it learns from correct labels</button><button>Reinforcement: it learns from rewards</button>
+    <div class="no">Does K-Means receive any target answers?</div><div class="ex">K-Means gets no labels. It discovers structure, and people interpret the clusters.</div></div>
+  <div class="q" data-a="1"><p>3. A logistic model outputs P(failure) = 0.30. Failures are very costly. What fits best?</p>
+    <button>Always use τ = 0.5</button><button>Use a lower threshold such as 0.2, so this case raises an alert</button><button>Ignore it, since 0.30 is below 1</button>
+    <div class="no">The threshold is a policy that depends on costs.</div><div class="ex">τ is a decision policy. When failure is costly, τ may be 0.2 or lower, and 0.30 ≥ 0.2 triggers an alert.</div></div>
 </article>
 
 <article class="pg sealp">

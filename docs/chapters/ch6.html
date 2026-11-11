@@ -80,10 +80,4 @@ new_q    = current_q + alpha * td_error</pre>
   <div class="q" data-a="0"><p>3. Which knob sets how often the agent tries a random action?</p>
     <button>ε, the exploration rate</button><button>α, the learning rate</button><button>γ, the discount factor</button>
     <div class="no">One knob is about exploring, one about update size, one about the future.</div><div class="ex">ε is the chance of an exploratory move; α sets update size and γ weights the future.</div></div>
-  <div class="q" data-a="1"><p>4. How does SARSA differ from Q-learning?</p>
-    <button>It needs a full model of the world</button><button>It uses the next action actually taken, so it is on-policy</button><button>It never updates a Q-table</button>
-    <div class="no">The name lists the tuple it uses: (s, a, r, s′, a′).</div><div class="ex">SARSA's target uses Q(s′,a′) for the action the behavior policy actually chose.</div></div>
-  <div class="q" data-a="2"><p>5. Why does a plain Q-table stop working for large problems?</p>
-    <button>Q-values become negative</button><button>Rewards disappear</button><button>Too many (or continuous) states, so we need function approximation</button>
-    <div class="no">Think about how many cells the battery example needs.</div><div class="ex">A table needs one entry per state-action pair, which becomes impossible for millions of states, images or continuous sensors.</div></div>
 </article>

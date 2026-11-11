@@ -76,10 +76,4 @@ labels = km.fit_predict(X_scaled)</pre>
   <div class="q" data-a="1"><p>3. A logistic model outputs P(failure) = 0.30. Failures are very costly. What fits best?</p>
     <button>Always use τ = 0.5</button><button>Use a lower threshold such as 0.2, so this case raises an alert</button><button>Ignore it, since 0.30 is below 1</button>
     <div class="no">The threshold is a policy that depends on costs.</div><div class="ex">τ is a decision policy. When failure is costly, τ may be 0.2 or lower, and 0.30 ≥ 0.2 triggers an alert.</div></div>
-  <div class="q" data-a="1"><p>4. Why does a random forest usually beat a single deep tree on new data?</p>
-    <button>It is easier to read aloud</button><button>Averaging many diverse trees reduces variance</button><button>It needs no training data</button>
-    <div class="no">Think about what many different trees do together.</div><div class="ex">Bootstrap samples and random features give diverse trees, and voting reduces variance.</div></div>
-  <div class="q" data-a="0"><p>5. Why must features be scaled before K-Means?</p>
-    <button>Large-unit features would dominate the distances</button><button>Scaling creates labels</button><button>Scaling lowers the number of clusters to one</button>
-    <div class="no">K-Means works with distances between points.</div><div class="ex">Distance is the core of K-Means, so a feature measured in thousands would swamp one measured in single digits.</div></div>
 </article>
