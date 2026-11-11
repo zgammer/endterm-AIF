@@ -1,0 +1,82 @@
+<!-- Chapter VII: Rational decisions. Source: Rational Decisions & Classical ML lecture, parts 1-3 and 7 (the maintenance chain). -->
+<article class="pg">
+  <h2><small>Chapter VII</small>Weighing Fate</h2>
+  <p class="drop">Our knight has learned to search, to guess and to learn from wandering. Now he must <i>choose</i> when the world will not tell him what comes next. A <b>rational</b> agent looks at the evidence it has right now, weighs the possible outcomes and picks the best action. It is judged by that choice, not by hindsight. If the dice fall badly, the choice was not necessarily foolish. An <b>omniscient</b> agent, one who already knows the future, does not exist in real life, so every real agent chooses under doubt.</p>
+  <figure class="ill" data-f="img/ch7-01-scales.png"><img src="img/ch7-01-scales.png" alt="A knight weighing a bag of gold against a shield on a wooden scale" onerror="this.parentNode.classList.add('miss')"><figcaption>Judge the choice by what was known when it was made.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>The Rule of the Best Bet</h2>
+  <p>The agent repeats a loop: <b>sensors</b> observe, a <b>belief state</b> guesses what is happening, a <b>decision rule</b> compares the actions, and <b>actuators</b> carry one out. The decision rule is this:</p>
+  <div class="formula">a* = arg max<sub>a</sub> E[ U | a, e ]</div>
+  <p>Here a is a candidate action, e is the evidence at hand, U is the utility (a score of how much we like an outcome) and E is the probability-weighted average. Note that arg max returns the <i>action</i>, not the best score.</p>
+  <p>A delivery robot may take a short route or a safe route. The shortest path is not always the best decision once collision risk and delay costs are counted.</p>
+  <i class="h a" style="right:10px;bottom:30%;transform:rotate(-10deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>Odds Are Not Enough</h2>
+  <p class="drop">A 90% chance of success sounds fine, until failure is a catastrophe. So a rational agent combines probability <i>and</i> utility. The <b>expected utility</b> of an action is the sum, over its outcomes, of probability times utility:</p>
+  <div class="formula">EU(a) = Σ<sub>i</sub> P(o<sub>i</sub> | a) × U(o<sub>i</sub>)</div>
+  <table>
+    <tr><th>Project</th><th>Success</th><th>Failure</th><th>Expected utility</th></tr>
+    <tr><td>A</td><td>90% → +100</td><td>10% → −20</td><td>0.9·100 + 0.1·(−20) = 88</td></tr>
+    <tr><td>B</td><td>60% → +200</td><td>40% → −50</td><td>0.6·200 + 0.4·(−50) = 100</td></tr>
+  </table>
+  <p>Project B is riskier, yet it wins by <b>maximum expected utility</b> (MEU), because its rewards are larger.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>Brave, Careful or Neutral?</h2>
+  <p>People differ in how they treat risk. A <b>risk-neutral</b> chooser maximizes the plain average and has utility that grows in a straight line with money. A <b>risk-averse</b> chooser dislikes large losses, so their utility curve is concave and they may prefer the steadier prize. If safety rules forbid some actions, we maximize only over the feasible ones.</p>
+  <pre>actions = {'A': ([0.9, 0.1], [100, -20]),
+           'B': ([0.6, 0.4], [200, -50])}
+def EU(probs, utils):
+    return sum(p*u for p, u in zip(probs, utils))
+scores = {n: EU(*v) for n, v in actions.items()}
+print(max(scores, key=scores.get))   # B</pre>
+  <p>Four lines, and the scroll names the winner: multiply, add, take the arg max.</p>
+  <i class="h a" style="left:12px;bottom:10%;transform:rotate(8deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>Updating What We Believe</h2>
+  <p class="drop">The true state may be hidden, and sensors are noisy. <b>Bayes' theorem</b> updates a belief when evidence D arrives about a hypothesis H (say, a failing machine):</p>
+  <div class="formula">P(H | D) = P(D | H) · P(H) / P(D)</div>
+  <p>The denominator counts both ways the evidence can appear: P(D) = P(D|H)P(H) + P(D|¬H)P(¬H). Forget the false alarms and the posterior is badly inflated.</p>
+  <p>Try it. A mill machine fails 5% of the time. An alarm sounds for 90% of real failures and also for 10% of healthy runs. Then P(alarm) = 0.9·0.05 + 0.1·0.95 = 0.14, and P(failure | alarm) = 0.045 / 0.14 ≈ 0.32. A loud alarm lifts the risk from 5% to about 32%, not to 90%.</p>
+  <figure class="ill" data-f="img/ch7-02-bayes.png"><img src="img/ch7-02-bayes.png" alt="A mill with an alarm bell and a scroll of weights" onerror="this.parentNode.classList.add('miss')"><figcaption>Belief tells us what is probably true, not yet what to do.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>From Belief to Action</h2>
+  <p><b>Bayes tells us what to believe; decision theory tells us what to do.</b> If the failure probability is p and a failure costs C<sub>failure</sub>, then continuing has expected cost p × C<sub>failure</sub>. Maintenance costs C<sub>maint</sub> and is assumed to prevent the failure. So:</p>
+  <div class="formula">Maintain if p<sub>failure</sub> &gt; C<sub>maint</sub> / C<sub>failure</sub></div>
+  <p>With maintenance at $2,000 and failure at $10,000, the threshold is 2,000 / 10,000 = 0.20:</p>
+  <table>
+    <tr><th>Failure risk</th><th>10%</th><th>20%</th><th>30%</th><th>50%</th></tr>
+    <tr><td>Expected cost of continuing</td><td>$1,000</td><td>$2,000</td><td>$3,000</td><td>$5,000</td></tr>
+  </table>
+  <p>Our mill's alarm gave about 32%, so the knight orders maintenance. The 20% comes from <i>costs</i>, not from model accuracy: if failure were costlier, the threshold would drop.</p>
+  <figure class="ill" data-f="img/ch7-03-threshold.png"><img src="img/ch7-03-threshold.png" alt="A gate at a river with a line marking a threshold" onerror="this.parentNode.classList.add('miss')"><figcaption>The line is drawn by the price of being wrong.</figcaption></figure>
+  <i class="h a" style="left:10px;top:42%;transform:rotate(-7deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VII</small>The Trial of Reason</h2>
+  <div class="q" data-a="1"><p>1. A rational agent's choice turns out badly. What does that show?</p>
+    <button>The agent was irrational</button><button>Nothing by itself: rationality is judged by the evidence available at the time</button><button>The agent should have been omniscient</button>
+    <div class="no">Ask whether the decision used the information it had.</div><div class="ex">Rationality is about maximizing expected performance given available evidence, so a bad result does not prove a bad choice.</div></div>
+  <div class="q" data-a="2"><p>2. Project B: 60% chance of +200, 40% chance of −50. What is its expected utility?</p>
+    <button>150</button><button>70</button><button>100</button>
+    <div class="no">Compute 0.6 × 200 and 0.4 × (−50), then add.</div><div class="ex">120 − 20 = 100, higher than Project A's 88.</div></div>
+  <div class="q" data-a="0"><p>3. Maintenance costs $2,000 and an unprevented failure costs $10,000. At which failure risk does maintenance become worthwhile?</p>
+    <button>Above 20%</button><button>Above 50%</button><button>Only when risk is 100%</button>
+    <div class="no">Divide the maintenance cost by the failure cost.</div><div class="ex">The threshold is 2,000 / 10,000 = 0.20.</div></div>
+  <div class="q" data-a="1"><p>4. Route A: 80% for +100, 20% for −50. Route B: 95% for +80, 5% for −20. Which is better by MEU?</p>
+    <button>Route A, with EU = 70</button><button>Route B, with EU = 75</button><button>Both are equal</button>
+    <div class="no">Compute both expected utilities.</div><div class="ex">EU(A) = 80 − 10 = 70 and EU(B) = 76 − 1 = 75, so Route B wins despite its smaller reward.</div></div>
+  <div class="q" data-a="2"><p>5. Failure risk is 15%, a failure costs $20,000 and maintenance costs $2,000. What should we do?</p>
+    <button>Continue: 15% is below 20%</button><button>Continue: the model is only 85% sure</button><button>Maintain: continuing costs $3,000 in expectation</button>
+    <div class="no">The threshold here is 2,000 / 20,000, not 20%.</div><div class="ex">0.15 × 20,000 = 3,000 &gt; 2,000, so maintenance saves $1,000 in expectation.</div></div>
+</article>

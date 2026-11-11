@@ -1,0 +1,85 @@
+<!-- Chapter VIII: Classical machine learning. Source: Rational Decisions & Classical ML lecture, parts 4-6 and evaluation. -->
+<article class="pg">
+  <h2><small>Chapter VIII</small>The Apprentice Learns</h2>
+  <p class="drop">In the old way, a person writes every rule: <i>if the temperature is above 80, ring the alarm</i>. But real data are noisy, thresholds overlap and patterns bend. So the apprentice does something different. He studies examples and outcomes, and a learning algorithm finds the rules itself. We write it ŷ = f<sub>θ</sub>(x): features x go in (say temperature and vibration), learned parameters θ shape the mapping f, and a prediction ŷ comes out, a number or a class.</p>
+  <figure class="ill" data-f="img/ch8-01-apprentice.png"><img src="img/ch8-01-apprentice.png" alt="An apprentice studying a table of examples while a master holds a rulebook" onerror="this.parentNode.classList.add('miss')"><figcaption>Rules written by hand, or rules found in examples.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>The Workshop Routine</h2>
+  <p>Every learning project follows five steps: <b>collect</b> labeled examples, <b>split</b> them into training and test sets, <b>fit</b> the model, <b>evaluate</b> it on unseen data, then <b>deploy</b> it on new cases. One law must never be broken: test information must not leak into fitting, or the grade means nothing.</p>
+  <p>The kind of feedback the teacher gives defines three paradigms:</p>
+  <table>
+    <tr><th></th><th>Supervised</th><th>Unsupervised</th><th>Reinforcement</th></tr>
+    <tr><td>Signal</td><td>Correct labels</td><td>No labels</td><td>Rewards</td></tr>
+    <tr><td>Goal</td><td>Predict a target</td><td>Find structure</td><td>Maximize reward</td></tr>
+    <tr><td>Output</td><td>Class or number</td><td>Clusters</td><td>Policy</td></tr>
+  </table>
+  <p>The same machine data can serve all three: <i>will it fail?</i> (supervised), <i>which operating modes exist?</i> (unsupervised), <i>when should we maintain it?</i> (reinforcement).</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Numbers and Labels</h2>
+  <p class="drop"><b>Regression</b> predicts a continuous number such as energy demand or a price. <b>Classification</b> predicts a class or its probability, such as failure or fraud. The simplest regression draws a line: ŷ = wx + b. If consumption = 5 × temperature + 100, then at 30°C we predict 250 kWh.</p>
+  <p>How do we pick the line? By minimizing the average squared error:</p>
+  <div class="formula">MSE = (1/n) Σ<sub>i</sub> (y<sub>i</sub> − ŷ<sub>i</sub>)²</div>
+  <p>Squaring punishes big misses: an error of 10 costs 100, an error of 2 only 4. For regression we judge models by MAE, RMSE and R²; for classification by precision, recall and F1.</p>
+  <p>Fit the five readings (15, 174), (20, 201), (25, 224), (30, 251), (35, 278) and you get a slope near 5.16 and an intercept near 96.6, so 32°C predicts about 262 kWh.</p>
+  <i class="h a" style="right:10px;bottom:12%;transform:rotate(-9deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>From Score to Probability</h2>
+  <p><b>Logistic regression</b> turns a linear score into a probability with the sigmoid, an S-shaped curve:</p>
+  <div class="formula">σ(z) = 1 / (1 + e<sup>−z</sup>), &nbsp; P(y=1 | x) = σ(wᵀx + b)</div>
+  <table>
+    <tr><th>z</th><th>−2</th><th>−1</th><th>0</th><th>1</th><th>2</th></tr>
+    <tr><td>σ(z)</td><td>0.119</td><td>0.269</td><td>0.5</td><td>0.731</td><td>0.881</td></tr>
+  </table>
+  <p>A probability is not yet a decision. We predict failure when P(failure | x) ≥ τ. The threshold τ is a <i>policy</i>, not a law of the model. The default 0.5 is not always best: when failures are costly, τ may be 0.2 or lower, and a lower τ catches more real failures.</p>
+  <p>It echoes the last chapter: the cost-based threshold 2,000 / 10,000 = 0.20 is exactly such a τ.</p>
+  <i class="h a" style="left:10px;bottom:8%;transform:rotate(7deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Trees and Forests</h2>
+  <p class="drop">A <b>decision tree</b> is a ladder of if–then questions: is the temperature above 70°C? Is the vibration above 3? Its rules can be read aloud, it bends around nonlinear patterns and needs little preprocessing. But a deep tree may overfit, and a small change in the data can grow a different tree. A <b>random forest</b> plants many trees: each sees a bootstrap sample of the rows and a random subset of features, and the forest votes. Averaging many diverse trees usually reduces variance, at the cost of being harder to explain.</p>
+  <figure class="ill" data-f="img/ch8-02-forest.png"><img src="img/ch8-02-forest.png" alt="One tree with signposts on its branches beside a forest of many trees" onerror="this.parentNode.classList.add('miss')"><figcaption>One tree is easy to read; a forest is steadier.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Finding Groups</h2>
+  <p>Sometimes no one has labeled the data. <b>K-Means</b> finds groups by similarity in four moves: choose K centroids; assign each point to its nearest centroid; move each centroid to the mean of its points; repeat until nothing changes. It minimizes the within-cluster squared distance:</p>
+  <div class="formula">J = Σ<sub>k</sub> Σ<sub>x∈C<sub>k</sub></sub> ‖x − μ<sub>k</sub>‖²</div>
+  <p>Features with big units (spending in dollars next to purchase counts) would dominate the distance, so we <b>scale</b> them first. Cluster numbers are only names: cluster 2 is not &ldquo;better&rdquo; than cluster 0. The algorithm finds the groups, but people must decide what they mean.</p>
+  <pre>X_scaled = StandardScaler().fit_transform(X)
+km = KMeans(n_clusters=3, n_init=10, random_state=42)
+labels = km.fit_predict(X_scaled)</pre>
+  <i class="h a" style="right:12px;top:40%;transform:rotate(11deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>Is the Model Any Good?</h2>
+  <p class="drop">Suppose only 2% of observations are failures. A lazy model that always says &ldquo;normal&rdquo; scores 98% <b>accuracy</b> and finds 0% of failures. So we also measure <b>recall</b> = TP / (TP + FN), the share of real failures caught, and <b>precision</b> = TP / (TP + FP), the share of alarms that are real. F1 = 2PR / (P + R) balances the two, though not the actual costs. Model A (accuracy 95%, recall 60%) may be worse than Model B (accuracy 92%, recall 90%) when missed failures are dangerous.</p>
+  <p>Evaluate honestly: learn on the <i>train</i> split, tune on <i>validation</i>, report on <i>test</i>, then check calibration, since a 70% prediction should come true about 70% of the time. Beware overfitting, data leakage, distribution shift and miscalibration. For rational decisions, trustworthy probabilities can matter more than raw accuracy.</p>
+  <figure class="ill" data-f="img/ch8-03-trust.png"><img src="img/ch8-03-trust.png" alt="A guard checking alarms from a tower against real fires" onerror="this.parentNode.classList.add('miss')"><figcaption>An alarm is only as good as the fires it finds.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VIII</small>The Trial of the Apprentice</h2>
+  <div class="q" data-a="2"><p>1. Only 2% of cases are failures. A model that always predicts &ldquo;normal&rdquo; has what accuracy and failure recall?</p>
+    <button>2% and 98%</button><button>50% and 50%</button><button>98% and 0%</button>
+    <div class="no">It is right on all normal cases, and it never detects a failure.</div><div class="ex">Accuracy = 98%, recall = 0 / (number of failures) = 0%. Accuracy hides the problem.</div></div>
+  <div class="q" data-a="0"><p>2. K-Means is which kind of learning?</p>
+    <button>Unsupervised: it finds groups without labels</button><button>Supervised: it learns from correct labels</button><button>Reinforcement: it learns from rewards</button>
+    <div class="no">Does K-Means receive any target answers?</div><div class="ex">K-Means gets no labels. It discovers structure, and people interpret the clusters.</div></div>
+  <div class="q" data-a="1"><p>3. A logistic model outputs P(failure) = 0.30. Failures are very costly. What fits best?</p>
+    <button>Always use τ = 0.5</button><button>Use a lower threshold such as 0.2, so this case raises an alert</button><button>Ignore it, since 0.30 is below 1</button>
+    <div class="no">The threshold is a policy that depends on costs.</div><div class="ex">τ is a decision policy. When failure is costly, τ may be 0.2 or lower, and 0.30 ≥ 0.2 triggers an alert.</div></div>
+  <div class="q" data-a="1"><p>4. Why does a random forest usually beat a single deep tree on new data?</p>
+    <button>It is easier to read aloud</button><button>Averaging many diverse trees reduces variance</button><button>It needs no training data</button>
+    <div class="no">Think about what many different trees do together.</div><div class="ex">Bootstrap samples and random features give diverse trees, and voting reduces variance.</div></div>
+  <div class="q" data-a="0"><p>5. Why must features be scaled before K-Means?</p>
+    <button>Large-unit features would dominate the distances</button><button>Scaling creates labels</button><button>Scaling lowers the number of clusters to one</button>
+    <div class="no">K-Means works with distances between points.</div><div class="ex">Distance is the core of K-Means, so a feature measured in thousands would swamp one measured in single digits.</div></div>
+</article>
