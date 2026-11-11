@@ -68,6 +68,8 @@ def bfs(graph, start, goal):
   <i class="h a" style="right:3px;top:46%;transform:rotate(-25deg)" data-n="Beware Ogre"></i>
 </article>
 
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+
 <article class="pg">
   <h2><small>Chapter II</small>Local Search: Climbing the Hill</h2>
   <p class="drop">Sometimes the road does not matter, only the castle we arrive at. Then we search not for a path but for a <b>complete configuration</b>: a placement of queens, a traveling salesman’s route. A configuration has <b>neighbors</b> (small changes) and an <b>objective function</b>, a number we maximize or minimize. Only the current state is stored, so almost no memory is needed<i class="h" style="transform:rotate(10deg)" data-n="Beware Ogre"></i>.</p>
@@ -108,6 +110,8 @@ def anneal(values, start, T=10):
     <div class="no">Not quite. Walk through it: 1 → 4 → 7, and then the neighbors are worse.</div><div class="ex">Correct: 7 is a local maximum, and reaching 9 requires passing through a worse value.</div></div>
   <i class="h a" style="left:3px;top:55%;transform:rotate(18deg)" data-n="Beware Ogre"></i>
 </article>
+
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
 
 <article class="pg">
   <h2><small>Chapter III</small>Probability and Bayesian Networks</h2>
@@ -181,6 +185,8 @@ print(f"{posterior:.2%}")   # 32.14%</pre>
   <i class="h a" style="left:3px;top:58%;transform:rotate(16deg)" data-n="Beware Ogre"></i>
 </article>
 
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+
 <article class="pg">
   <h2><small>Chapter IV</small>Hidden Markov Models</h2>
   <p class="drop">A sensor reports a measurement, not the whole truth. A machine may be Healthy, Degrading or Faulty, but we only see temperature, vibration and alarms. In a Hidden Markov Model the true state stays hidden and produces noisy observations; one high reading does not prove a fault<i class="h" style="transform:rotate(9deg)" data-n="Beware Ogre"></i>.</p>
@@ -250,6 +256,189 @@ for t in range(2):          # two High readings
     <button>Forward sums over predecessors and gives probabilities; Viterbi takes the max and gives one best path</button><button>Forward looks at the past, Viterbi at the future</button><button>Viterbi needs no transition matrix</button>
     <div class="no">Not quite. Think SUM versus MAX.</div><div class="ex">Correct: same model, different goal.</div></div>
   <i class="h a" style="left:3px;top:56%;transform:rotate(-14deg)" data-n="Beware Ogre"></i>
+</article>
+
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+
+<!-- Chapter V: Markov Decision Processes and planning. Source: MDP + RL lecture, slides 1-33. -->
+<article class="pg">
+  <h2><small>Chapter V</small>The Fork in the Road</h2>
+  <p class="drop">Our knight no longer walks a single road. Every step he takes changes the land ahead: it opens some paths and closes others, and the weather may push him off course. So the best move now is not always the best move in the long run. A miller's machine shows it well. To CONTINUE earns +10 today, but running hot invites a breakdown. MAINTENANCE costs −15 today, yet it can save the mill from a −200 disaster. A wise decision weighs the whole future, not only the next coin.</p>
+  <figure class="ill" data-f="img/ch5-01-fork.png"><img src="img/ch5-01-fork.png" alt="A knight at a crossroads with a mill and a hedge maze" onerror="this.parentNode.classList.add('miss')"><figcaption>Choosing now, paying later.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter V</small>A Map Is Not Enough</h2>
+  <p>Classic search hands the knight one path: START → RIGHT → RIGHT → UP → GOAL. That works when every step goes as planned. But if RIGHT sometimes slips DOWN, the path breaks. An <b>MDP</b> (Markov Decision Process) hands him a <b>policy</b> instead: what to do from <i>every</i> place he might end up. It is built from five parts:</p>
+  <table>
+    <tr><th>Part</th><th>Meaning</th></tr>
+    <tr><td>States S</td><td>Situations the agent can be in</td></tr>
+    <tr><td>Actions A</td><td>Choices available to the agent</td></tr>
+    <tr><td>Transitions P(s′|s,a)</td><td>Probability that action a in state s leads to s′</td></tr>
+    <tr><td>Reward R</td><td>Immediate score after a step</td></tr>
+    <tr><td>Discount γ</td><td>How much the future matters (0 to 1)</td></tr>
+  </table>
+  <p>In the classic grid example the intended move succeeds 80% of the time and slips left or right 10% each.</p>
+  <i class="h a" style="right:10px;bottom:34%;transform:rotate(-10deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter V</small>What the State Must Remember</h2>
+  <p class="drop">The <b>Markov property</b> says the next state depends only on the current state and action, not on the whole history. That is partly a matter of how we describe the world. A car at position 100 m could be standing still or racing at 120 km/h, and braking ends very differently. If the state holds only the position, the two cars look identical. Add speed and direction, and the future becomes predictable. The same lesson holds for a battery: state of charge alone cannot say whether electricity is cheap or dear right now, so price and hour must join the state.</p>
+  <figure class="ill" data-f="img/ch5-02-state.png"><img src="img/ch5-02-state.png" alt="Two riders look alike at a distance but travel at different speeds" onerror="this.parentNode.classList.add('miss')"><figcaption>If a clue is missing from the state, no algorithm can learn to use it.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter V</small>Reward, Return and Patience</h2>
+  <p><b>Reward</b> is what happens right now. <b>Return</b> is the discounted sum of everything that follows:</p>
+  <div class="formula">G<sub>t</sub> = R<sub>t+1</sub> + γR<sub>t+2</sub> + γ²R<sub>t+3</sub> + …</div>
+  <p>Example: rewards 5, 10, 20 with γ = 0.9 give G = 5 + 0.9·10 + 0.9²·20 = 30.2.</p>
+  <p>The discount decides how far the knight looks ahead. A reward of 100 that lies ten steps away is worth 100·γ¹⁰ today:</p>
+  <table>
+    <tr><th>γ</th><th>0.50</th><th>0.80</th><th>0.90</th><th>0.99</th></tr>
+    <tr><td>Worth now</td><td>≈ 0.10</td><td>≈ 10.74</td><td>≈ 34.87</td><td>≈ 90.44</td></tr>
+  </table>
+  <p>Remember: reward is local, value summarizes the future. A square next to the treasure may pay 0 today and still be very valuable.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter V</small>Policies and Values</h2>
+  <p class="drop">A <b>policy</b> π tells the agent what to do in each state. It can be fixed (state B → RIGHT) or random (RIGHT with probability 0.8, UP with 0.2). A battery policy might read: low price and low charge, CHARGE; high price and high charge, DISCHARGE. To judge a policy we use two scores. <b>V(s)</b> is the expected return from state s. <b>Q(s,a)</b> is the expected return after taking action a in s and then following the policy.</p>
+  <p>The best value is the best action's value: V*(s) = max<sub>a</sub> Q*(s,a). At state A, with Q(LEFT) = 2, Q(RIGHT) = 8, Q(UP) = 4 and Q(DOWN) = −5, the optimal action is RIGHT and V*(A) = 8. Q-values hold both the verdict and the recipe.</p>
+  <i class="h a" style="left:12px;bottom:12%;transform:rotate(8deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter V</small>The Bellman Whisper</h2>
+  <p>Every long future splits into <b>now + later</b>. Value now equals reward now plus the discounted value of where you land. Take a short road A → B → GOAL with step cost −1 and γ = 0.9. From B: V(B) = −1 + 0.9·10 = 8. Then V(A) = −1 + 0.9·8 = 6.2. Worth flows backward from the treasure.</p>
+  <p>When steps are uncertain we average over outcomes. Action RIGHT leads 80% of the time to a GOOD place (V = 10) and 20% to a BAD one (V = −5):</p>
+  <div class="formula">Q(s,RIGHT) = 0.8[−1 + 0.9·10] + 0.2[−1 + 0.9·(−5)] = 6.4 − 1.1 = 5.3</div>
+  <p>The optimal version simply adds a max over actions: evaluate each action, average its outcomes, add the future, pick the best.</p>
+  <figure class="ill" data-f="img/ch5-03-bellman.png"><img src="img/ch5-03-bellman.png" alt="Golden lanterns lighting a road backward from a treasure" onerror="this.parentNode.classList.add('miss')"><figcaption>Value spreads backward from the goal.</figcaption></figure>
+  <i class="h a" style="right:8px;top:8px;transform:rotate(12deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter V</small>Two Ways to Plan</h2>
+  <p>If the knight knows the map (P and R), he can plan without leaving home.</p>
+  <p><b>Value iteration</b> applies the Bellman backup to every state again and again until values settle. On a chain with a goal worth 10:</p>
+  <table>
+    <tr><th>Sweep</th><th>Values (start → goal)</th></tr>
+    <tr><td>0</td><td>0, 0, 0, 10</td></tr>
+    <tr><td>1</td><td>0, 0, 8, 10</td></tr>
+    <tr><td>2</td><td>0, 6.2, 8, 10</td></tr>
+    <tr><td>3</td><td>4.58, 6.2, 8, 10</td></tr>
+  </table>
+  <p><b>Policy iteration</b> alternates two moves: <i>evaluate</i> the current policy (compute V<sup>π</sup>), then <i>improve</i> it by picking the best one-step lookahead action in each state. Repeat until nothing changes.</p>
+  <p>But in the real world, the exact odds are often unknown. What is the chance a machine fails tomorrow at a given vibration and load? Then the knight must <i>learn</i>, and that is the next chapter.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter V</small>The Trial of Knowledge</h2>
+  <div class="q" data-a="2"><p>1. Why can a state with reward 0 still have a high value?</p>
+    <button>Because rewards are always wrong</button><button>Because the discount factor is 0</button><button>Because it leads to states with large future rewards</button>
+    <div class="no">Think about what value measures: the future, not only the next step.</div><div class="ex">Value is the expected discounted future return, so a square one step from the treasure can be worth a lot even when it pays nothing today.</div></div>
+  <div class="q" data-a="1"><p>2. Rewards 5, 10, 20 with γ = 0.9. What is the return?</p>
+    <button>35</button><button>30.2</button><button>25</button>
+    <div class="no">Discount each reward: 5 + 0.9·10 + 0.9²·20.</div><div class="ex">5 + 9 + 16.2 = 30.2.</div></div>
+  <div class="q" data-a="0"><p>3. What does an MDP solution give that a single search path does not?</p>
+    <button>A policy: what to do from every state</button><button>A list of past rewards</button><button>A guarantee that nothing goes wrong</button>
+    <div class="no">If a move slips, the old path is useless. What covers every situation?</div><div class="ex">A policy maps each state to an action, so the agent still knows what to do after a slip.</div></div>
+  <div class="q" data-a="2"><p>4. Q(A,LEFT) = 2, Q(A,RIGHT) = 8, Q(A,UP) = 4, Q(A,DOWN) = −5. What is V*(A)?</p>
+    <button>2</button><button>−5</button><button>8</button>
+    <div class="no">V* is the value of the best action.</div><div class="ex">V*(A) = max Q*(A,a) = 8, reached by going RIGHT.</div></div>
+</article>
+
+<div class="band">⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜ ❖ ⚜</div>
+
+<!-- Chapter VI: Reinforcement learning. Source: MDP + RL lecture, slides 34-73. -->
+<article class="pg">
+  <h2><small>Chapter VI</small>Learning by Wandering</h2>
+  <p class="drop">Now the map is gone. The knight does not know the odds of a slip or the price of a step, and nobody tells him the right move. He can only act, watch what happens, and remember. This is <b>reinforcement learning</b>: state S<sub>t</sub> → action A<sub>t</sub> → reward R<sub>t+1</sub> → next state S<sub>t+1</sub> → update what he knows. Each step leaves a little record (s, a, r, s′), and a chain of them is a trajectory. Unlike a student with an answer key, he learns from consequences, and the reward for a good deed may come many steps late.</p>
+  <figure class="ill" data-f="img/ch6-01-maze.png"><img src="img/ch6-01-maze.png" alt="A knight wandering a hedge maze, leaving lanterns behind" onerror="this.parentNode.classList.add('miss')"><figcaption>No answer key, only consequences.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Brave or Careful?</h2>
+  <p><b>Exploit</b> means choosing the action you currently believe is best. <b>Explore</b> means trying something uncertain to find out whether your beliefs are wrong. Too little exploring traps the knight in a mediocre habit; too much wastes his gold. The simplest compromise is <b>ε-greedy</b>: with probability ε pick a random action, otherwise pick the best known one. With ε = 0.1 about one move in ten is a gamble. Often ε shrinks as training goes on.</p>
+  <p>Three knobs, three different jobs:</p>
+  <table>
+    <tr><th>Knob</th><th>Question it answers</th></tr>
+    <tr><td>α, learning rate</td><td>How far should one experience move my belief?</td></tr>
+    <tr><td>γ, discount</td><td>How much do future rewards matter?</td></tr>
+    <tr><td>ε, exploration</td><td>How often do I try something else?</td></tr>
+  </table>
+  <i class="h a" style="right:10px;bottom:10%;transform:rotate(-9deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Surprise Is a Teacher</h2>
+  <p><b>Monte Carlo</b> waits for the whole journey, computes the real return G, and nudges the estimate toward it: V(s) ← V(s) + α[G − V(s)]. <b>Temporal-Difference (TD)</b> learning does not wait. After one step it compares its guess with a reward plus another guess:</p>
+  <div class="formula">δ = R<sub>t+1</sub> + γV(S<sub>t+1</sub>) − V(S<sub>t</sub>)</div>
+  <p>Positive δ means the outcome was better than expected, so the estimate rises; negative δ lowers it. Example: V(A) = 5, reward 2, V(B) = 8, γ = 0.9. The target is 2 + 0.9·8 = 9.2 and the error is 9.2 − 5 = 4.2. A was better than predicted.</p>
+  <p>Using one guess to improve another is called <b>bootstrapping</b>.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>The Q-Learning Ledger</h2>
+  <div class="formula">Q(s,a) ← Q(s,a) + α [ r + γ max<sub>a′</sub> Q(s′,a′) − Q(s,a) ]</div>
+  <p>Read it as: <i>current belief</i> plus a fraction α of the <i>surprise</i>. Suppose Q(A,RIGHT) = 4, r = 2, max Q(B,·) = 8, γ = 0.9, α = 0.5. Target = 2 + 0.9·8 = 9.2; error = 5.2; new Q = 4 + 0.5·5.2 = 6.6. Experience beat the expectation, so RIGHT became more valuable.</p>
+  <pre>target   = reward + gamma * best_future_q
+td_error = target - current_q
+new_q    = current_q + alpha * td_error</pre>
+  <i class="h a" style="left:10px;top:44%;transform:rotate(7deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Practice on a Chain</h2>
+  <p class="drop">Try it on a five-state chain: START, 1, 2, 3, GOAL. The actions are LEFT and RIGHT, each step costs −1, the goal pays +10, and the Q-table starts as all zeros: one row per state, one column per action. In early episodes the knight wanders (0→1→0→1→2→1→2→3→4). After many episodes every state learns that RIGHT is best (0→1→2→3→4), and the policy π(s) = argmax<sub>a</sub> Q(s,a) can be read straight from the table.</p>
+  <figure class="ill" data-f="img/ch6-02-ledger.png"><img src="img/ch6-02-ledger.png" alt="A scribe filling in a ledger of states and actions" onerror="this.parentNode.classList.add('miss')"><figcaption>A table with one entry for each state and action.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Two Temperaments</h2>
+  <p class="drop">Q-learning and <b>SARSA</b> differ by one small term. Q-learning's target uses max Q(s′,a′): it learns the value of acting <i>greedily</i> afterwards, even while the knight explores. That makes it <b>off-policy</b>. SARSA uses Q(s′,a′) for the action a′ he <i>actually took</i>, so it learns the value of the exploring behavior itself. That makes it <b>on-policy</b>, and it tends to be more cautious when mistakes are costly.</p>
+  <p>Another divide: <b>model-based</b> methods learn or use a model of transitions and rewards, then plan with it. <b>Model-free</b> methods like Q-learning learn values or policies directly from experience. Neither needs the map handed to it in advance.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>When the Ledger Overflows</h2>
+  <p>A table works for a chain of five squares. A battery controller with 10 charge levels, 20 prices, 20 demands, 20 solar levels and 24 hours has 1,920,000 states; with 3 actions that is 5,760,000 entries. Images and continuous sensors are worse. So we replace the table with a function that generalizes.</p>
+  <p><b>Deep Q-Network (DQN)</b> approximates Q(s,a;θ) with a neural network and stays stable thanks to a <i>replay buffer</i> (random old experiences) and a <i>target network</i> (a slowly updated copy). <b>Policy-gradient</b> methods learn the policy π<sub>θ</sub>(a|s) directly, which suits continuous actions. <b>Actor–Critic</b> pairs an actor (“what should I do?”) with a critic (“how good was that?”).</p>
+  <p>The idea is the same as before: long-term action value. Only the way we store it has changed.</p>
+  <figure class="ill" data-f="img/ch6-03-scaling.png"><img src="img/ch6-03-scaling.png" alt="A tiny ledger beside a vast library of scrolls and a wise owl" onerror="this.parentNode.classList.add('miss')"><figcaption>When the ledger is too small, learn a rule instead.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>From the Garden to the Real World</h2>
+  <p>In a factory, a state may be (temperature, vibration, load, health), actions are CONTINUE, REDUCE LOAD, INSPECT or MAINTAIN, and the reward balances output against energy, upkeep and the cost of failure. Careful practice matters:</p>
+  <ul>
+    <li>A big reward is not permission to break engineering limits, so hard safety limits should be kept apart from the reward.</li>
+    <li>Train in a simulator or on recorded data before touching real machines.</li>
+    <li>Watch for sensor faults, changing conditions and a badly written reward that pays for the number but not the real goal.</li>
+    <li>Check whether RL is needed at all. Simple optimization may be enough. Compare against strong baselines.</li>
+  </ul>
+  <p>A good RL project starts with a good decision problem, not with a favorite algorithm.</p>
+  <i class="h a" style="right:12px;bottom:8%;transform:rotate(-11deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>The Trial of Learning</h2>
+  <div class="q" data-a="1"><p>1. Why does Q-learning use max Q(s′,a′) in its target?</p>
+    <button>To make the agent explore more</button><button>To learn the value of acting greedily afterwards</button><button>Because rewards are always negative</button>
+    <div class="no">Look at what the max picks: the best next action.</div><div class="ex">The max makes the target follow the greedy policy, so Q-learning is off-policy: it learns the best behavior even while exploring.</div></div>
+  <div class="q" data-a="2"><p>2. A TD error δ is positive. What does that mean?</p>
+    <button>The outcome was worse than expected</button><button>Learning has finished</button><button>The outcome was better than expected, so the estimate rises</button>
+    <div class="no">δ is target minus current estimate.</div><div class="ex">A positive δ means the target exceeded the current guess, so the guess is raised.</div></div>
+  <div class="q" data-a="0"><p>3. Which knob sets how often the agent tries a random action?</p>
+    <button>ε, the exploration rate</button><button>α, the learning rate</button><button>γ, the discount factor</button>
+    <div class="no">One knob is about exploring, one about update size, one about the future.</div><div class="ex">ε is the chance of an exploratory move; α sets update size and γ weights the future.</div></div>
+  <div class="q" data-a="1"><p>4. How does SARSA differ from Q-learning?</p>
+    <button>It needs a full model of the world</button><button>It uses the next action actually taken, so it is on-policy</button><button>It never updates a Q-table</button>
+    <div class="no">The name lists the tuple it uses: (s, a, r, s′, a′).</div><div class="ex">SARSA's target uses Q(s′,a′) for the action the behavior policy actually chose.</div></div>
+  <div class="q" data-a="2"><p>5. Why does a plain Q-table stop working for large problems?</p>
+    <button>Q-values become negative</button><button>Rewards disappear</button><button>Too many (or continuous) states, so we need function approximation</button>
+    <div class="no">Think about how many cells the battery example needs.</div><div class="ex">A table needs one entry per state-action pair, which becomes impossible for millions of states, images or continuous sensors.</div></div>
 </article>
 
 <article class="pg sealp">

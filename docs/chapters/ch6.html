@@ -1,0 +1,89 @@
+<!-- Chapter VI: Reinforcement learning. Source: MDP + RL lecture, slides 34-73. -->
+<article class="pg">
+  <h2><small>Chapter VI</small>Learning by Wandering</h2>
+  <p class="drop">Now the map is gone. The knight does not know the odds of a slip or the price of a step, and nobody tells him the right move. He can only act, watch what happens, and remember. This is <b>reinforcement learning</b>: state S<sub>t</sub> → action A<sub>t</sub> → reward R<sub>t+1</sub> → next state S<sub>t+1</sub> → update what he knows. Each step leaves a little record (s, a, r, s′), and a chain of them is a trajectory. Unlike a student with an answer key, he learns from consequences, and the reward for a good deed may come many steps late.</p>
+  <figure class="ill" data-f="img/ch6-01-maze.png"><img src="img/ch6-01-maze.png" alt="A knight wandering a hedge maze, leaving lanterns behind" onerror="this.parentNode.classList.add('miss')"><figcaption>No answer key, only consequences.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Brave or Careful?</h2>
+  <p><b>Exploit</b> means choosing the action you currently believe is best. <b>Explore</b> means trying something uncertain to find out whether your beliefs are wrong. Too little exploring traps the knight in a mediocre habit; too much wastes his gold. The simplest compromise is <b>ε-greedy</b>: with probability ε pick a random action, otherwise pick the best known one. With ε = 0.1 about one move in ten is a gamble. Often ε shrinks as training goes on.</p>
+  <p>Three knobs, three different jobs:</p>
+  <table>
+    <tr><th>Knob</th><th>Question it answers</th></tr>
+    <tr><td>α, learning rate</td><td>How far should one experience move my belief?</td></tr>
+    <tr><td>γ, discount</td><td>How much do future rewards matter?</td></tr>
+    <tr><td>ε, exploration</td><td>How often do I try something else?</td></tr>
+  </table>
+  <i class="h a" style="right:10px;bottom:10%;transform:rotate(-9deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Surprise Is a Teacher</h2>
+  <p><b>Monte Carlo</b> waits for the whole journey, computes the real return G, and nudges the estimate toward it: V(s) ← V(s) + α[G − V(s)]. <b>Temporal-Difference (TD)</b> learning does not wait. After one step it compares its guess with a reward plus another guess:</p>
+  <div class="formula">δ = R<sub>t+1</sub> + γV(S<sub>t+1</sub>) − V(S<sub>t</sub>)</div>
+  <p>Positive δ means the outcome was better than expected, so the estimate rises; negative δ lowers it. Example: V(A) = 5, reward 2, V(B) = 8, γ = 0.9. The target is 2 + 0.9·8 = 9.2 and the error is 9.2 − 5 = 4.2. A was better than predicted.</p>
+  <p>Using one guess to improve another is called <b>bootstrapping</b>.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>The Q-Learning Ledger</h2>
+  <div class="formula">Q(s,a) ← Q(s,a) + α [ r + γ max<sub>a′</sub> Q(s′,a′) − Q(s,a) ]</div>
+  <p>Read it as: <i>current belief</i> plus a fraction α of the <i>surprise</i>. Suppose Q(A,RIGHT) = 4, r = 2, max Q(B,·) = 8, γ = 0.9, α = 0.5. Target = 2 + 0.9·8 = 9.2; error = 5.2; new Q = 4 + 0.5·5.2 = 6.6. Experience beat the expectation, so RIGHT became more valuable.</p>
+  <pre>target   = reward + gamma * best_future_q
+td_error = target - current_q
+new_q    = current_q + alpha * td_error</pre>
+  <i class="h a" style="left:10px;top:44%;transform:rotate(7deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Practice on a Chain</h2>
+  <p class="drop">Try it on a five-state chain: START, 1, 2, 3, GOAL. The actions are LEFT and RIGHT, each step costs −1, the goal pays +10, and the Q-table starts as all zeros: one row per state, one column per action. In early episodes the knight wanders (0→1→0→1→2→1→2→3→4). After many episodes every state learns that RIGHT is best (0→1→2→3→4), and the policy π(s) = argmax<sub>a</sub> Q(s,a) can be read straight from the table.</p>
+  <figure class="ill" data-f="img/ch6-02-ledger.png"><img src="img/ch6-02-ledger.png" alt="A scribe filling in a ledger of states and actions" onerror="this.parentNode.classList.add('miss')"><figcaption>A table with one entry for each state and action.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>Two Temperaments</h2>
+  <p class="drop">Q-learning and <b>SARSA</b> differ by one small term. Q-learning's target uses max Q(s′,a′): it learns the value of acting <i>greedily</i> afterwards, even while the knight explores. That makes it <b>off-policy</b>. SARSA uses Q(s′,a′) for the action a′ he <i>actually took</i>, so it learns the value of the exploring behavior itself. That makes it <b>on-policy</b>, and it tends to be more cautious when mistakes are costly.</p>
+  <p>Another divide: <b>model-based</b> methods learn or use a model of transitions and rewards, then plan with it. <b>Model-free</b> methods like Q-learning learn values or policies directly from experience. Neither needs the map handed to it in advance.</p>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>When the Ledger Overflows</h2>
+  <p>A table works for a chain of five squares. A battery controller with 10 charge levels, 20 prices, 20 demands, 20 solar levels and 24 hours has 1,920,000 states; with 3 actions that is 5,760,000 entries. Images and continuous sensors are worse. So we replace the table with a function that generalizes.</p>
+  <p><b>Deep Q-Network (DQN)</b> approximates Q(s,a;θ) with a neural network and stays stable thanks to a <i>replay buffer</i> (random old experiences) and a <i>target network</i> (a slowly updated copy). <b>Policy-gradient</b> methods learn the policy π<sub>θ</sub>(a|s) directly, which suits continuous actions. <b>Actor–Critic</b> pairs an actor (“what should I do?”) with a critic (“how good was that?”).</p>
+  <p>The idea is the same as before: long-term action value. Only the way we store it has changed.</p>
+  <figure class="ill" data-f="img/ch6-03-scaling.png"><img src="img/ch6-03-scaling.png" alt="A tiny ledger beside a vast library of scrolls and a wise owl" onerror="this.parentNode.classList.add('miss')"><figcaption>When the ledger is too small, learn a rule instead.</figcaption></figure>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>From the Garden to the Real World</h2>
+  <p>In a factory, a state may be (temperature, vibration, load, health), actions are CONTINUE, REDUCE LOAD, INSPECT or MAINTAIN, and the reward balances output against energy, upkeep and the cost of failure. Careful practice matters:</p>
+  <ul>
+    <li>A big reward is not permission to break engineering limits, so hard safety limits should be kept apart from the reward.</li>
+    <li>Train in a simulator or on recorded data before touching real machines.</li>
+    <li>Watch for sensor faults, changing conditions and a badly written reward that pays for the number but not the real goal.</li>
+    <li>Check whether RL is needed at all. Simple optimization may be enough. Compare against strong baselines.</li>
+  </ul>
+  <p>A good RL project starts with a good decision problem, not with a favorite algorithm.</p>
+  <i class="h a" style="right:12px;bottom:8%;transform:rotate(-11deg)" data-n="Beware Ogre"></i>
+</article>
+
+<article class="pg">
+  <h2><small>Chapter VI</small>The Trial of Learning</h2>
+  <div class="q" data-a="1"><p>1. Why does Q-learning use max Q(s′,a′) in its target?</p>
+    <button>To make the agent explore more</button><button>To learn the value of acting greedily afterwards</button><button>Because rewards are always negative</button>
+    <div class="no">Look at what the max picks: the best next action.</div><div class="ex">The max makes the target follow the greedy policy, so Q-learning is off-policy: it learns the best behavior even while exploring.</div></div>
+  <div class="q" data-a="2"><p>2. A TD error δ is positive. What does that mean?</p>
+    <button>The outcome was worse than expected</button><button>Learning has finished</button><button>The outcome was better than expected, so the estimate rises</button>
+    <div class="no">δ is target minus current estimate.</div><div class="ex">A positive δ means the target exceeded the current guess, so the guess is raised.</div></div>
+  <div class="q" data-a="0"><p>3. Which knob sets how often the agent tries a random action?</p>
+    <button>ε, the exploration rate</button><button>α, the learning rate</button><button>γ, the discount factor</button>
+    <div class="no">One knob is about exploring, one about update size, one about the future.</div><div class="ex">ε is the chance of an exploratory move; α sets update size and γ weights the future.</div></div>
+  <div class="q" data-a="1"><p>4. How does SARSA differ from Q-learning?</p>
+    <button>It needs a full model of the world</button><button>It uses the next action actually taken, so it is on-policy</button><button>It never updates a Q-table</button>
+    <div class="no">The name lists the tuple it uses: (s, a, r, s′, a′).</div><div class="ex">SARSA's target uses Q(s′,a′) for the action the behavior policy actually chose.</div></div>
+  <div class="q" data-a="2"><p>5. Why does a plain Q-table stop working for large problems?</p>
+    <button>Q-values become negative</button><button>Rewards disappear</button><button>Too many (or continuous) states, so we need function approximation</button>
+    <div class="no">Think about how many cells the battery example needs.</div><div class="ex">A table needs one entry per state-action pair, which becomes impossible for millions of states, images or continuous sensors.</div></div>
+</article>
