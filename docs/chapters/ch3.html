@@ -2,9 +2,9 @@
   <h2><small>Chapter III</small>Probability and Bayesian Networks</h2>
   <p class="drop">A smoke alarm rings. Is there a fire, burnt toast, or just a false alarm? AI almost never sees the world perfectly: sensors are noisy, events have several possible causes, and the same clue can support many stories. Probability tells us how strongly the evidence supports each one<i class="h" style="transform:rotate(-8deg)" data-n="Beware Ogre"></i>.</p>
   <figure class="ill" data-f="img/ch3-01-alarm.png"><img src="img/ch3-01-alarm.png" alt="A bell tower with a ringing bell and a curious fox" onerror="this.parentNode.classList.add('miss')"><figcaption>An alarm is a clue, not a verdict.</figcaption></figure>
-  <p>A probability is a number from 0 to 1: P = 0.7 means “likely”, not “guaranteed”. A set of outcomes that exclude each other and cover everything always adds up to 1.</p>
 </article>
 <article class="pg">
+  <p>A probability is a number from 0 to 1: P = 0.7 means “likely”, not “guaranteed”. A set of outcomes that exclude each other and cover everything always adds up to 1.</p>
   <p>A monitor records the temperature (T) and the condition (F) of a machine. The <b>joint distribution</b> lists every combination:</p>
   <div class="wrap"><table>
     <tr><th>Temperature</th><th>Failure</th><th>Healthy</th></tr>
@@ -39,10 +39,10 @@ print(f"{posterior:.2%}")   # 32.14%</pre>
     <tr><td>Smoke</td><td>P(S | F) = 0.90,  P(S | ¬F) = 0.05</td></tr>
     <tr><td>Alarm</td><td>P(A | S) = 0.95,  P(A | ¬S) = 0.01</td></tr>
   </table></div>
-  <div class="box"><div class="formula">P(F, S, A) = P(F) · P(S | F) · P(A | S)</div>
-    <p>Summing out the hidden Smoke gives P(Fire | Alarm) = 0.01712 / 0.07298 ≈ <b>23.46%</b>. The alarm lifts the chance of fire from 2%, but does not prove it.</p></div>
 </article>
 <article class="pg">
+  <div class="box"><div class="formula">P(F, S, A) = P(F) · P(S | F) · P(A | S)</div>
+    <p>Summing out the hidden Smoke gives P(Fire | Alarm) = 0.01712 / 0.07298 ≈ <b>23.46%</b>. The alarm lifts the chance of fire from 2%, but does not prove it.</p></div>
   <p><b>Inference</b> answers a question about hidden variables using evidence. The query here is Fire, the evidence is Alarm = yes, and Smoke is hidden.</p>
   <div class="wrap"><table>
     <tr><th>Method</th><th>Idea</th></tr>
@@ -51,6 +51,8 @@ print(f"{posterior:.2%}")   # 32.14%</pre>
     <tr><td>Rejection sampling</td><td>simulate cases and keep those that match the evidence; wasteful if the evidence is rare</td></tr>
     <tr><td>Likelihood weighting</td><td>fix the evidence and weight each sample, so nothing is thrown away</td></tr>
   </table></div>
+</article>
+<article class="pg">
   <div class="box"><p><b>Explaining away.</b> The alarm sounds: a burglary becomes likelier. Then we learn that an earthquake happened: the burglary becomes less likely, because the alarm now has another explanation.</p></div>
   <p>Sparse networks stay small: 20 binary variables need 2²⁰ ≈ one million joint entries, but only a few tiny tables if each node has few parents.</p>
 </article>

@@ -2,15 +2,17 @@
   <h2><small>Chapter II</small>Local Search: Climbing the Hill</h2>
   <p class="drop">Sometimes the road does not matter, only the castle we arrive at. Then we search not for a path but for a <b>complete configuration</b>: a placement of queens, a traveling salesman’s route. A configuration has <b>neighbors</b> (small changes) and an <b>objective function</b>, a number we maximize or minimize. Only the current state is stored, so almost no memory is needed<i class="h" style="transform:rotate(10deg)" data-n="Beware Ogre"></i>.</p>
   <figure class="ill" data-f="img/ch2-01-landscape.png"><img src="img/ch2-01-landscape.png" alt="Hills with two peaks and a knight" onerror="this.parentNode.classList.add('miss')"><figcaption>The landscape: a low peak nearby, a high one far away.</figcaption></figure>
-  <p><b>Hill climbing</b> looks at the neighbors and moves to the best one; when none is better, it stops. It is fast, but it falls into traps: a <b>local maximum</b> (a peak lower than the best one), a <b>plateau</b> (everything is equal) and a <b>ridge</b>.</p>
 </article>
 <article class="pg">
+  <p><b>Hill climbing</b> looks at the neighbors and moves to the best one; when none is better, it stops. It is fast, but it falls into traps: a <b>local maximum</b> (a peak lower than the best one), a <b>plateau</b> (everything is equal) and a <b>ridge</b>.</p>
   <div class="box"><p>Landscape <b>[1, 4, 7, 5, 3, 6, 9, 8]</b>. From index 0 the algorithm walks 1 → 4 → 7 and stops: both neighbors are worse. But index 6 holds the value 9, the global maximum.<i class="h a" style="right:6px;bottom:4px;width:24px;height:24px;transform:rotate(30deg)" data-n="Beware Ogre"></i></p></div>
   <figure class="ill" data-f="img/ch2-02-restarts.png"><img src="img/ch2-02-restarts.png" alt="Three knights starting from different hills" onerror="this.parentNode.classList.add('miss')"><figcaption>Random restarts: every knight has his own hill.</figcaption></figure>
-  <p><b>Random restarts</b>: run hill climbing from different points and keep the best result. <b>Simulated annealing</b> can temporarily accept a worse move: at a high temperature T this happens often, and as the system cools, more and more rarely.</p>
 </article>
 <article class="pg">
+  <p><b>Random restarts</b>: run hill climbing from different points and keep the best result. <b>Simulated annealing</b> can temporarily accept a worse move: at a high temperature T this happens often, and as the system cools, more and more rarely.</p>
   <figure class="ill" data-f="img/ch2-03-annealing.png"><img src="img/ch2-03-annealing.png" alt="A blacksmith at a forge with cooling metal" onerror="this.parentNode.classList.add('miss')"><figcaption>Annealing: free and hot at first, stricter later.</figcaption></figure>
+</article>
+<article class="pg">
   <div class="box"><div class="formula">ΔE = next − current;  P(accept worse) = exp(ΔE / T)</div></div>
 <pre>import random, math
 def anneal(values, start, T=10):
@@ -34,5 +36,5 @@ def anneal(values, start, T=10):
   <div class="q" data-a="0"><p>3. Hill climbing on [1, 4, 7, 5, 3, 6, 9, 8] starting at index 0 returns the value…</p>
     <button>7</button><button>9</button><button>8</button>
     <div class="no">Not quite. Walk through it: 1 → 4 → 7, and then the neighbors are worse.</div><div class="ex">Correct: 7 is a local maximum, and reaching 9 requires passing through a worse value.</div></div>
-  <i class="h a" style="right:14px;top:55%;transform:rotate(18deg)" data-n="Beware Ogre"></i>
+  <i class="h a" style="left:3px;top:55%;transform:rotate(18deg)" data-n="Beware Ogre"></i>
 </article>

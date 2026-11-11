@@ -6,7 +6,7 @@ Read this first. It describes what the project is, how it is built, what the rul
 
 ## 1. What this is
 
-An interactive web e-book that teaches the *AI Fundamentals* course. It looks like the storybook from the opening of the *Shrek* films: parchment pages, drop caps, heraldic borders. It is plain **HTML + CSS + vanilla JS** (no frameworks, no bundlers, no npm in the shipped project). Version: v0.4, chapters I–IV done (21 pages: 4 + 4 + 6 + 6 + seal).
+An interactive web e-book that teaches the *AI Fundamentals* course. It looks like the storybook from the opening of the *Shrek* films: parchment pages, drop caps, heraldic borders. It is plain **HTML + CSS + vanilla JS** (no frameworks, no bundlers, no npm in the shipped project). Version: v0.4.1, chapters I–IV done (25 pages: 5 + 5 + 7 + 7 + seal).
 
 Experience: a closed book lies on a wooden table. While the user scrolls down, the cover opens, then pages turn one after another like the opening animation. The chapters *are* the pages (nothing below the book). The last page is a "seal" with counters and a locked button. The button unlocks when **all quiz answers are correct OR all hidden signs are found**. Pressing it shows a fake loading bar (about 4 s), then the reward image `img/reward.jpg`.
 
@@ -42,7 +42,7 @@ Workflow: edit `chapters/` or `partials/`, run `python3 build.py`, then test. Ed
 - Quiz markup: `<div class="q" data-a="K"><p>…</p><button>…</button>…<div class="no">hint</div><div class="ex">explanation</div></div>`. `data-a` is the 0-based index of the correct button. Use 3 options. Wrong answers can be retried.
 - **Exactly 3 hidden signs per chapter**: `<i class="h" data-n="Beware Ogre"></i>`. Spread them over different pages. Inline ones go inside text or a table cell. For absolute ones add class `a` and position them in the page margin (`right:3px`/`left:3px` plus `top`), so they never cover buttons or text. The sprite is `img/hidden-object.png`.
 - Illustration markup: `<figure class="ill" data-f="img/chN-01-name.png"><img src="…" alt="…" onerror="this.parentNode.classList.add('miss')"><figcaption>…</figcaption></figure>`. If the file is missing, a dashed frame shows the file name. Images are shown at a fixed height with `object-fit: cover` (so 4:3 or 3:2 are both fine; 3:2 / 1200x800 recommended).
-- Give each chapter an **even number of pages** so the next chapter starts on a right-hand page (chapters I–IV have 4, 4, 6, 6). Quiz pages must still fit after the explanations appear, so keep question texts short.
+- Illustrations keep their natural proportions on desktop (`.ill img{height:100%}` in `css/book.css`, set by the user). A 3:2 figure with caption is about 344 px tall, so one page holds **at most one figure plus roughly 300 px of other content**. Whatever does not fit moves to the next page. On phones (<= 820 px) figures are cropped to 140 px height. Chapters may have any number of pages (the book inserts a blank filler before the seal when needed). Quiz pages must still fit after the explanations appear, so keep question texts short.
 - Do not give elements IDs inside chapters. Do not add inline scripts. Keep code samples to about 10 lines. Page body font is 15.5 px.
 - Tone: short, friendly, slightly fairy-tale, but technically correct. Source of truth: the lecture PDFs listed in section 8.
 
@@ -84,7 +84,7 @@ The user explicitly asked for self-testing before delivery. Static checks are no
 
 1. No JS errors (`pageerror`). Missing image/font requests are expected until the assets exist.
 2. `.pg` count and `.lf` count match expectations; at scroll 0 the closed book is shown.
-3. Scroll to `t = 0, 1, 2, …` (`scrollTo(0, t * innerHeight * 0.9)`) and screenshot. Pages must show and nothing may overflow (`scrollHeight <= clientHeight`).
+3. Measure every `.pg` for overflow with real-sized stand-in images (3:2, and 4:3 for the worst case): `scrollHeight <= clientHeight`. Then scroll to `t = 0, 1, 2, …` (`scrollTo(0, t * innerHeight * 0.9)`) and screenshot. Pages must show and nothing may overflow (`scrollHeight <= clientHeight`).
 4. Click every sign and every correct answer with **real mouse clicks** at the element centre, and confirm `document.elementFromPoint(x, y)` is that element (this catches overlapped items). Recompute positions after each click, because explanations shift the layout.
 5. Counters reach N/N and M/M. Test the unlock rule separately: only signs found, and only answers correct; both must enable the button.
 6. Click the button, wait about 5 s, and confirm the reward image loads (`naturalWidth > 0`).
